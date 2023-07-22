@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './common/baseEntity';
 import { IsNotEmpty, MaxLength } from 'class-validator';
-import { MemberEntity } from './member';
+import { MemberEntity } from './member.entity';
 import { CommonConstant } from './constant/common.constant';
 
 @Entity('group')
@@ -13,12 +13,11 @@ export class GroupEntity extends BaseEntity {
 
   @Column({
     nullable: true,
-    default: '',
   })
   @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
   description?: string;
 
-  @OneToMany(() => MemberEntity, (userToGroup) => userToGroup.group)
+  @OneToMany(() => MemberEntity, (member) => member.group)
   members: MemberEntity[];
 
   static create(name: string): GroupEntity {

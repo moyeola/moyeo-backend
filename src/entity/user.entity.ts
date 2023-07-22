@@ -3,7 +3,7 @@ import { BaseEntity } from './common/baseEntity';
 import { IsNotEmpty, MaxLength } from 'class-validator';
 import { PermissionEntity } from './permission.entity';
 import { AuthEntity } from './auth.entity';
-import { MemberEntity } from './member';
+import { MemberEntity } from './member.entity';
 import { CommonConstant } from './constant/common.constant';
 
 export enum UserStatus {
