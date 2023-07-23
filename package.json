@@ -29,7 +29,7 @@
     "class-validator": "^0.13.2",
     "dayjs": "^1.11.6",
     "jsonwebtoken": "^8.5.1",
-    "moyeo-object": "^0.2.1",
+    "moyeo-object": "^0.3.4",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
