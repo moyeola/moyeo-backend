@@ -3784,10 +3784,10 @@ mkdirp@^2.1.3:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-2.1.6.tgz#964fbcb12b2d8c5d6fbc62a963ac95a273e2cc19"
   integrity sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==
 
-moyeo-object@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/moyeo-object/-/moyeo-object-0.3.4.tgz#389ced747be67c061edc94af90796905881c38d0"
-  integrity sha512-CTQS1Ee0dgaYes+RN3lykTMMTGZkBw9I9y+72PdGpMrWVmrr5W8kJwwSPbQPhbes/goHxbsPQUTjyCmmr3jn+w==
+moyeo-object@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/moyeo-object/-/moyeo-object-0.4.0.tgz#fc97d5bd58fd53c4a6a8aaf5f340d3db6bc19ce0"
+  integrity sha512-6XnX+OOBPkjaaot7gHKBcEB/O+a3rDYSYTAm8sfTS1Oai7clZxjjbX1ccSR2P1lYb5V1Nh/Weddwk290FPCZzg==
   dependencies:
     class-validator "^0.14.0"
     endpoint-client "^0.1.1"

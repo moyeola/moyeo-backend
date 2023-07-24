@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetUserRes, UserDto } from 'moyeo-object';
-import { UserEntity } from 'src/entity';
-import { UserObject } from 'src/object';
+import { UserEntity } from '@/entity';
+import { UserObject } from '@/object';
 import { Repository } from 'typeorm';
 
 @Injectable()

@@ -40,8 +40,16 @@ export class UserEntity extends BaseEntity {
   @OneToMany(() => AuthEntity, (auth) => auth.user)
   auth: Auth;
 
-  static create(): UserEntity {
+  static create({
+    name,
+    profileImageUrl,
+  }: {
+    name: string;
+    profileImageUrl: string;
+  }): UserEntity {
     const user = new UserEntity();
+    user.name = name;
+    user.profileImageUrl = profileImageUrl;
 
     return user;
   }

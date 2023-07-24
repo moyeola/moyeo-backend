@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './modules/user/user.module';
+import { DevModule } from './modules/dev/dev.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       charset: 'utf8mb4',
       synchronize: process.env.DB_SYNCHRONIZE === 'true',
     }),
+    UserModule,
+    DevModule,
   ],
   controllers: [AppController],
   providers: [AppService],
