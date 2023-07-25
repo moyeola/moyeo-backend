@@ -57,4 +57,4 @@ jobs:
             docker stop moyeo-backend || true
             docker rm moyeo-backend || true
             docker pull moyeo/moyeo-backend:${{ github.sha }}
-            docker run -d --name moyeo-backend -p ${{ secrets.OUT_PORT }}:3000 --env-file .env.production moyeo/moyeo-backend:${{ github.sha }}
+            docker run -d --name moyeo-backend -p ${{ secrets.OUT_PORT }}:3000 --env-file .env moyeo/moyeo-backend:${{ github.sha }}
