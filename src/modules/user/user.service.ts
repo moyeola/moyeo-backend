@@ -21,4 +21,11 @@ export class UserService {
 
     return UserObject.from(user);
   }
+
+  async createUser(
+    data: Parameters<typeof UserEntity.create>[0],
+  ): Promise<UserEntity> {
+    const user = UserEntity.create(data);
+    return await this.userRepository.save(user);
+  }
 }

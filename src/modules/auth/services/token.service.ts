@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { AccessTokenPayload } from './types/accessTokenPayload';
+import { AccessTokenPayload } from '../types/accessTokenPayload';
+import { UserEntity } from '@/entity';
 
 @Injectable()
 export class TokenService {
+  createAccessTokenFromUser(user: UserEntity) {
+    const permissions = user.permissions.map(
+      (permission) => permission.permission,
+    );
+    return this.createAccessToken(user.id, permissions);
+  }
+
   createAccessToken(userId: number, permissions: string[]) {
     const payload: AccessTokenPayload = {
       type: 'user',

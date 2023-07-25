@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { TokenService } from './token.service';
+import { TokenService } from './services/token.service';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { UserPermission } from 'src/entity';

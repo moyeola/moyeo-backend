@@ -1,8 +1,8 @@
 import { Controller, Get, Param, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { GetUserRes } from 'moyeo-object';
-import { Token } from '../auth/token.decorator';
 import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
+import { Token } from '../auth/decorator/token.decorator';
 
 @Controller('users')
 export class UserController {

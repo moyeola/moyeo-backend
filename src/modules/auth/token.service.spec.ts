@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { TokenService } from './token.service';
+import { TokenService } from './services/token.service';
 
 describe('TokenService', () => {
   let service: TokenService;
