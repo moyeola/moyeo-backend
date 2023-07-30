@@ -22,15 +22,30 @@ export class AuthEntity extends BaseEntity {
   oAuthId: string;
 
   @Column()
-  oAuthAccessToken: string;
-
-  @Column()
-  oAuthRefreshToken: string;
-
-  @Column()
   oAuthEmail: string;
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
+
+  static create({
+    oAuth,
+    oAuthId,
+    oAuthEmail,
+    user,
+  }: {
+    oAuth: 'google';
+    oAuthId: string;
+    oAuthAccessToken: string;
+    oAuthRefreshToken: string;
+    oAuthEmail: string;
+    user: UserEntity;
+  }) {
+    const auth = new AuthEntity();
+    auth.oAuth = oAuth;
+    auth.oAuthId = oAuthId;
+    auth.oAuthEmail = oAuthEmail;
+    auth.user = user;
+    return auth;
+  }
 }

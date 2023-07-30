@@ -1,0 +1,60 @@
+name: Develop build&deploy
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v1.2.0
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: moyeo/moyeo-backend:${{ github.sha }}
+          platforms: |
+            linux/amd64
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          key: ${{ secrets.DEV_SERVER_KEY }}
+          script: |
+            rm -rf .env
+            echo "PORT=${{ secrets.DEV_OUT_PORT }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> .env
+            echo "DB_DATABASE=${{ secrets.DEV_DB_DATABASE }}" >> .env
+            echo "DB_HOST=${{ secrets.DEV_DB_HOST }}" >> .env
+            echo "DB_PORT=${{ secrets.DEV_DB_PORT }}" >> .env
+            echo "DB_SYNCHRONIZE=true" >> .env
+            echo "JWT_SECRET=${{ secrets.DEV_JWT_SECRET }}" >> .env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.DEV_GOOGLE_CLIENT_ID }}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.DEV_GOOGLE_CLIENT_SECRET }}" >> .env
+            echo "GOOGLE_CLIENT_CALLBACK=${{ secrets.DEV_GOOGLE_CLIENT_CALLBACK }}" >> .env
+
+            docker stop moyeo-backend || true
+            docker rm moyeo-backend || true
+            docker pull moyeo/moyeo-backend:${{ github.sha }}
+            docker run -it -d --name moyeo-backend --network host --env-file .env moyeo/moyeo-backend:${{ github.sha }}

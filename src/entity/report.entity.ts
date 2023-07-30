@@ -29,7 +29,7 @@ export class ReportEntity extends BaseEntity {
   status: ReportStatusEnum;
 
   @Column({
-    type: 'text',
+    type: 'enum',
     enum: ReportReasonEnum,
     default: ReportReasonEnum.GENERAL,
   })
