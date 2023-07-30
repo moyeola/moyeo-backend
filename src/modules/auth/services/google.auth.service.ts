@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
 
 @Injectable()
@@ -6,10 +6,23 @@ export class GoogleAuthService {
   async getUserProfile(token: string) {
     const oauth2 = this.getGoogleClient(token);
 
-    const res = await oauth2.userinfo.get();
-    const { data } = res;
+    try {
+      const res = await oauth2.userinfo.get();
+      const { data } = res;
 
-    return data;
+      return data;
+    } catch (err) {
+      if ('response' in err) {
+        const { response } = err;
+        if (response.status === 401) {
+          throw new BadRequestException({
+            code: 'invalid_token',
+          });
+        }
+      }
+
+      throw err;
+    }
   }
 
   getGoogleClient(token: string) {
