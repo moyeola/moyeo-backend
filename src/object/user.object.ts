@@ -25,9 +25,9 @@ export class UserObject implements UserDto {
     }));
 
     if ('members' in user) {
-      userObject.members = user.members.map((member) =>
-        MemberObject.from(member),
-      );
+      userObject.members = user.members
+        .filter((member) => !('user' in member))
+        .map((member) => MemberObject.from(member));
     }
 
     return userObject;

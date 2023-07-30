@@ -17,9 +17,9 @@ export class GroupObject implements GroupDto {
     groupObject.description = group.description;
 
     if ('members' in group) {
-      groupObject.members = group.members.map((member) =>
-        MemberObject.from(member),
-      );
+      groupObject.members = group.members
+        .filter((member) => !('group' in member))
+        .map((member) => MemberObject.from(member));
     }
 
     return groupObject;
