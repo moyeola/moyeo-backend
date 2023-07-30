@@ -4,7 +4,9 @@ import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
 import { Token } from '../auth/decorator/token.decorator';
 import { DeleteUserMeRes, GetUserMeRes, PatchUserMeRes } from 'moyeo-object';
 import { PatchUserMeReqDto } from './dto/PatchUserMe.req.dto';
+import { Auth } from '../auth/decorator/auth.decorator';
 
+@Auth()
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
