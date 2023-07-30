@@ -19,7 +19,7 @@ export class AppService {
         },
         {
           name: '하선우',
-          github: 'https://github.comTwince',
+          github: 'https://github.com/Twince',
           role: ['Frontend'],
         },
       ],
