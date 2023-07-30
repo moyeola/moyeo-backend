@@ -20,9 +20,10 @@ export class GroupEntity extends BaseEntity {
   @OneToMany(() => MemberEntity, (member) => member.group)
   members: MemberEntity[];
 
-  static create(name: string): GroupEntity {
+  static create(name: string, description?: string): GroupEntity {
     const group = new GroupEntity();
     group.name = name;
+    group.description = description;
 
     return group;
   }

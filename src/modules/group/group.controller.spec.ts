@@ -9,6 +9,7 @@ import { GroupController } from './group.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { GroupService } from './group.service';
+import { TokenService } from '../auth/services/token.service';
 
 const createMockUser = (id: number, name: string) => {
   const user = new UserEntity();
@@ -82,6 +83,7 @@ describe('GroupController', () => {
       controllers: [GroupController],
       providers: [
         GroupService,
+        TokenService,
         {
           provide: getRepositoryToken(GroupEntity),
           useValue: groupRepository,
@@ -95,8 +97,42 @@ describe('GroupController', () => {
   describe('getGroup', () => {
     it('should return group', async () => {
       const group = await groupController.getGroup('1');
+      expect(groupRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: 1,
+        },
+        relations: ['members'],
+      });
+
       expect(group.group.id).toBe(1);
       expect(group.group.name).toBe('groupName');
+    });
+  });
+
+  describe('patchGroup', () => {
+    it('should patch group', async () => {
+      await groupController.patchGroup('1', {
+        name: 'newGroupName',
+        description: 'newDescription',
+      });
+      expect(groupRepository.update).toHaveBeenCalledWith(
+        {
+          id: 1,
+        },
+        {
+          name: 'newGroupName',
+          description: 'newDescription',
+        },
+      );
+    });
+  });
+
+  describe('deleteGroup', () => {
+    it('should delete group', async () => {
+      await groupController.deleteGroup('1');
+      expect(groupRepository.softDelete).toHaveBeenCalledWith({
+        id: 1,
+      });
     });
   });
 });
