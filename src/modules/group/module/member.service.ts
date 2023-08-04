@@ -1,6 +1,10 @@
 import { GroupEntity, MemberEntity, UserEntity } from '@/entity';
 import { MemberObject } from '@/object';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 
@@ -75,6 +79,24 @@ export class MemberService {
     );
   }
 
+  async deleteMember(memberId: number) {
+    const member = await this.memberRepository.findOne({
+      where: {
+        id: memberId,
+      },
+    });
+
+    if (!member) {
+      throw new NotFoundException({
+        code: 'member_not_found',
+      });
+    }
+
+    await this.memberRepository.delete({
+      id: memberId,
+    });
+  }
+
   async isUserInGroup(userId: number, groupId: number): Promise<boolean> {
     const res = await this.memberRepository.find({
       where: {
@@ -90,13 +112,35 @@ export class MemberService {
     return res.length > 0;
   }
 
-  async checkUserInGroup(userId: number, groupId: number): Promise<boolean> {
+  async checkMemberIsInGroup(
+    userId: number,
+    groupId: number,
+  ): Promise<boolean> {
     const res = await this.isUserInGroup(userId, groupId);
     if (!res) {
       throw new NotFoundException({
         code: 'group_not_found',
       });
     }
+    return true;
+  }
+
+  async checkMemberIsUser(userId: number, memberId: number): Promise<boolean> {
+    const res = await this.memberRepository.findOne({
+      where: {
+        id: memberId,
+        user: {
+          id: userId,
+        },
+      },
+    });
+
+    if (!res) {
+      throw new ForbiddenException({
+        code: 'permission_denied',
+      });
+    }
+
     return true;
   }
 }
