@@ -59,8 +59,6 @@ export class UserService {
       },
       data,
     );
-
-    return await this.userRepository.save(user);
   }
 
   async deleteUser(userId: number) {
