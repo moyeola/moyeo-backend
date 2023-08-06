@@ -11,7 +11,7 @@ import { AuthController } from './auth.controller';
 @Global()
 @Module({
   controllers: [AuthController],
-  imports: [UserModule, TypeOrmModule.forFeature([AuthEntity, UserEntity])],
+  imports: [TypeOrmModule.forFeature([AuthEntity, UserEntity])],
   providers: [AuthService, TokenService, GoogleAuthService, UserService],
   exports: [TokenService, AuthService],
 })

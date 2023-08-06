@@ -40,10 +40,17 @@ export class ReportEntity extends BaseEntity {
   })
   description?: string;
 
-  static create(user: UserEntity, reporter: UserEntity): ReportEntity {
+  static create(
+    user: UserEntity,
+    reporter: UserEntity,
+    reason?: ReportReasonEnum,
+    description?: string,
+  ): ReportEntity {
     const report = new ReportEntity();
     report.user = user;
     report.reporter = reporter;
+    report.reason = reason;
+    report.description = description;
 
     return report;
   }
