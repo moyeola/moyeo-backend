@@ -3,7 +3,7 @@ import { GroupController } from './group.controller';
 import { GroupService } from './group.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GroupEntity, MemberEntity, UserEntity } from '@/entity';
-import { MemberModule } from './module/member.module';
+import { MemberModule } from './modules/member/member.module';
 
 @Module({
   controllers: [GroupController],
