@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './common/baseEntity';
 import { CalendarEntity } from './calendar.entity';
 import { IsNotEmpty, MaxLength } from 'class-validator';
@@ -8,10 +8,20 @@ import { MemberEntity } from './member.entity';
 @Entity('calendarEvent')
 export class CalendarEventEntity extends BaseEntity {
   @ManyToOne(() => CalendarEntity, (calendar) => calendar.events)
+  @JoinColumn()
   calendar: CalendarEntity;
 
+  @Column()
+  @IsNotEmpty()
+  calendarId: number;
+
   @ManyToOne(() => MemberEntity)
+  @JoinColumn()
   creator: MemberEntity;
+
+  @Column()
+  @IsNotEmpty()
+  creatorId: number;
 
   @Column()
   @IsNotEmpty()
