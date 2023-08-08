@@ -16,5 +16,6 @@ import { CalendarEventModule } from './modules/event/event.module';
     ]),
     CalendarEventModule,
   ],
+  exports: [CalendarService],
 })
 export class CalendarModule {}
