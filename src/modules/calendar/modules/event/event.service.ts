@@ -2,7 +2,6 @@ import { CalendarEntity, CalendarEventEntity, MemberEntity } from '@/entity';
 import { CalendarEventObject } from '@/object/calendarEvent.object';
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';

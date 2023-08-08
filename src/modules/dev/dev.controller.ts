@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   Post,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { DevService } from './dev.service';
