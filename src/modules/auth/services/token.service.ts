@@ -6,9 +6,8 @@ import { UserEntity } from '@/entity';
 @Injectable()
 export class TokenService {
   createAccessTokenFromUser(user: UserEntity) {
-    const permissions = user.permissions.map(
-      (permission) => permission.permission,
-    );
+    const permissions =
+      user?.permissions?.map((permission) => permission.permission) || [];
     return this.createAccessToken(user.id, permissions);
   }
 

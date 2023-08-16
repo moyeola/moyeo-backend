@@ -3,8 +3,8 @@ import { google } from 'googleapis';
 
 @Injectable()
 export class GoogleAuthService {
-  async getUserProfile(token: string) {
-    const oauth2 = this.getGoogleClient(token);
+  async getUserProfile(token: string, redirectUri?: string) {
+    const oauth2 = this.getGoogleClient(token, redirectUri);
 
     try {
       const res = await oauth2.userinfo.get();
@@ -25,11 +25,11 @@ export class GoogleAuthService {
     }
   }
 
-  getGoogleClient(token: string) {
+  getGoogleClient(token: string, redirectUri?: string) {
     const oAuth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_CLIENT_CALLBACKS,
+      redirectUri || process.env.GOOGLE_CLIENT_CALLBACKS,
     );
 
     oAuth2Client.setCredentials({

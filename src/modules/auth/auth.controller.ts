@@ -8,6 +8,6 @@ export class AuthController {
 
   @Post('google')
   async googleAuth(@Body() dto: GoogleAuthReqDto) {
-    return await this.authService.googleAuth(dto.token);
+    return await this.authService.googleAuth(dto.token, dto.redirectUri);
   }
 }
