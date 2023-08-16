@@ -17,8 +17,14 @@ export class AuthService {
     private userService: UserService,
   ) {}
 
-  async googleAuth(token: string): Promise<GoogleAuthResDto> {
-    const profile = await this.googleAuthService.getUserProfile(token);
+  async googleAuth(
+    token: string,
+    redirectUri?: string,
+  ): Promise<GoogleAuthResDto> {
+    const profile = await this.googleAuthService.getUserProfile(
+      token,
+      redirectUri,
+    );
     let auth = await this.getAuth(profile.id, 'google');
 
     if (auth) {
