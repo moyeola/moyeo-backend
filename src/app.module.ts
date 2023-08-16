@@ -6,6 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { DevModule } from './modules/dev/dev.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GroupModule } from './modules/group/group.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { GroupModule } from './modules/group/group.module';
     AuthModule,
     DevModule,
     GroupModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,6 +3,7 @@ import { GroupObject } from '@/object';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class GroupService {
@@ -13,6 +14,7 @@ export class GroupService {
     private readonly memberRepository: Repository<MemberEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly calendarService: CalendarService,
   ) {}
 
   async postGroup(
@@ -39,6 +41,9 @@ export class GroupService {
 
     const member = MemberEntity.create(user, group);
     await this.memberRepository.save(member);
+
+    // 그룹 캘린더 생성
+    await this.calendarService.createCalendar(group);
 
     return group;
   }
