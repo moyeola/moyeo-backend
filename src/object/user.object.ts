@@ -10,6 +10,7 @@ export class UserObject implements UserDto {
   permissions: {
     permission: 'ADMIN';
   }[];
+  createdAt: string;
 
   members?: MemberObject[];
 

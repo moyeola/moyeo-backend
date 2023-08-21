@@ -7,6 +7,7 @@ export class MemberObject implements MemberDto {
   id: number;
   nickname: string;
   role: 'OWNER' | 'MEMBER';
+  createdAt: string;
 
   user?: UserObject;
   group?: GroupObject;

@@ -6,6 +6,7 @@ export class GroupObject implements GroupDto {
   id: number;
   name: string;
   description?: string;
+  createdAt: string;
 
   members?: MemberObject[];
 

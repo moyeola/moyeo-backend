@@ -6,6 +6,7 @@ export class ReportObject implements ReportDto {
   id: number;
   user: UserObject;
   reporter: UserObject;
+  createdAt: string;
 
   static from(report: ReportEntity): ReportObject {
     const reportObject = new ReportObject();
