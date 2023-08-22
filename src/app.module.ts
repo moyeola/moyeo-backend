@@ -7,6 +7,7 @@ import { DevModule } from './modules/dev/dev.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GroupModule } from './modules/group/group.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { MeetModule } from './modules/meet/meet.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
         DevModule,
         GroupModule,
         CalendarModule,
+        MeetModule,
     ],
     controllers: [AppController],
     providers: [AppService],
