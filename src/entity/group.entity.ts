@@ -6,25 +6,25 @@ import { CommonConstant } from './constant/common.constant';
 
 @Entity('group')
 export class GroupEntity extends BaseEntity {
-  @Column()
-  @IsNotEmpty()
-  @MaxLength(CommonConstant.GROUP_NAME_MAX_LENGTH)
-  name: string;
+    @Column()
+    @IsNotEmpty()
+    @MaxLength(CommonConstant.GROUP_NAME_MAX_LENGTH)
+    name: string;
 
-  @Column({
-    nullable: true,
-  })
-  @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
-  description?: string;
+    @Column({
+        nullable: true,
+    })
+    @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
+    description?: string;
 
-  @OneToMany(() => MemberEntity, (member) => member.group)
-  members: MemberEntity[];
+    @OneToMany(() => MemberEntity, (member) => member.group)
+    members: MemberEntity[];
 
-  static create(name: string, description?: string): GroupEntity {
-    const group = new GroupEntity();
-    group.name = name;
-    group.description = description;
+    static create(name: string, description?: string): GroupEntity {
+        const group = new GroupEntity();
+        group.name = name;
+        group.description = description;
 
-    return group;
-  }
+        return group;
+    }
 }

@@ -6,13 +6,13 @@ import { TokenService } from '../auth/services/token.service';
 
 @Injectable()
 export class DevService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    private readonly tokenService: TokenService,
-  ) {}
+    constructor(
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
+        private readonly tokenService: TokenService,
+    ) {}
 
-  createAccessToken(userId: number, permissions: string[]) {
-    return this.tokenService.createAccessToken(userId, permissions);
-  }
+    createAccessToken(userId: number, permissions: string[]) {
+        return this.tokenService.createAccessToken(userId, permissions);
+    }
 }
