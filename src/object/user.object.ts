@@ -21,9 +21,11 @@ export class UserObject implements UserDto {
         userObject.name = user.name;
         userObject.profileImageUrl = user.profileImageUrl;
         userObject.status = user.status;
-        userObject.permissions = user.permissions.map((permission) => ({
-            permission: permission.permission,
-        }));
+        userObject.permissions = (user?.permissions || []).map(
+            (permission) => ({
+                permission: permission.permission,
+            }),
+        );
 
         if ('members' in user) {
             userObject.members = user.members

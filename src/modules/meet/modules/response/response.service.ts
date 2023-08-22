@@ -26,10 +26,16 @@ export class MeetResponseService {
         private readonly memberRepository: Repository<MemberEntity>,
     ) {}
 
-    async getMeetResponse(id: number): Promise<MeetResponseObject> {
+    async getMeetResponse(
+        meetId: number,
+        responseId: number,
+    ): Promise<MeetResponseObject> {
         const meetResponse = await this.meetResponseRepository.findOne({
             where: {
-                id,
+                id: responseId,
+                meet: {
+                    id: meetId,
+                },
             },
             relations: ['meet', 'responserUser', 'responserMember'],
         });
@@ -75,6 +81,36 @@ export class MeetResponseService {
         if (!meet) {
             throw new NotFoundException({
                 code: 'MEET_NOT_FOUND',
+            });
+        }
+
+        const existingMeetResponse = await this.meetResponseRepository.findOne({
+            where: [
+                {
+                    meet: {
+                        id: meetId,
+                    },
+                    responserType: 'user',
+                    responserUser: {
+                        id: userId,
+                    },
+                },
+                {
+                    meet: {
+                        id: meetId,
+                    },
+                    responserType: 'member',
+                    responserMember: {
+                        user: {
+                            id: userId,
+                        },
+                    },
+                },
+            ],
+        });
+        if (existingMeetResponse) {
+            throw new BadRequestException({
+                code: 'ALREADY_RESPONSED',
             });
         }
 
@@ -192,5 +228,39 @@ export class MeetResponseService {
             meetResponse.times = JSON.stringify(data.times);
         }
         await this.meetResponseRepository.save(meetResponse);
+    }
+
+    async deleteMeetResponse(id: number, userId: number) {
+        const meetResponse = await this.meetResponseRepository.findOne({
+            where: {
+                id,
+            },
+            relations: ['meet', 'responserUser', 'responserMember'],
+        });
+        if (!meetResponse) {
+            throw new NotFoundException({
+                code: 'MEET_RESPONSE_NOT_FOUND',
+            });
+        }
+
+        if (meetResponse.responserType === 'user') {
+            if (meetResponse.responserUser.id !== userId) {
+                throw new BadRequestException({
+                    code: 'NOT_CREATOR',
+                });
+            }
+        } else if (meetResponse.responserType === 'member') {
+            if (meetResponse.responserMember.user.id !== userId) {
+                throw new BadRequestException({
+                    code: 'NOT_CREATOR',
+                });
+            }
+        } else if (meetResponse.responserType === 'guest') {
+            throw new BadRequestException({
+                code: 'NOT_CREATOR',
+            });
+        }
+
+        await this.meetResponseRepository.remove(meetResponse);
     }
 }

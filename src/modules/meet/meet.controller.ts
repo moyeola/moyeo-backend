@@ -22,7 +22,7 @@ export class MeetController {
     @Auth()
     @Get('/')
     async getMeets(@Token() token: AccessTokenPayload) {
-        const meets = this.meetService.getMeets(token.userId);
+        const meets = await this.meetService.getMeets(token.userId);
         return {
             meets,
         };

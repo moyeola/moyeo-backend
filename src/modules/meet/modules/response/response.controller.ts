@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+} from '@nestjs/common';
 import { MeetResponseService } from './response.service';
 import { Auth } from '@/modules/auth/decorator/auth.decorator';
 import { Token } from '@/modules/auth/decorator/token.decorator';
@@ -10,9 +19,16 @@ export class MeetResponseController {
     constructor(private readonly meetResponseService: MeetResponseService) {}
 
     @Get('/:responseId')
-    async getMeetResponse() {
+    async getMeetResponse(
+        @Param('meetId') meetId: string,
+        @Param('responseId') responseId: string,
+    ) {
+        const meetResponse = await this.meetResponseService.getMeetResponse(
+            +meetId,
+            +responseId,
+        );
         return {
-            meetResponse: {},
+            meetResponse,
         };
     }
 
@@ -20,7 +36,7 @@ export class MeetResponseController {
     @Post('/')
     async postMeetResponse(
         @Token() token: AccessTokenPayload,
-        @Query('meetId') meetId: string,
+        @Param('meetId') meetId: string,
         @Body() dto: PostMeetResponseReqDto,
     ) {
         await this.meetResponseService.postMeetResponse(
@@ -31,16 +47,28 @@ export class MeetResponseController {
     }
 
     @Auth()
-    @Post('/:responseId')
+    @Patch('/:responseId')
     async patchMeetResponse(
         @Token() token: AccessTokenPayload,
-        @Query('meetId') meetId: string,
+        @Param('meetId') meetId: string,
         @Body() dto: PostMeetResponseReqDto,
     ) {
         await this.meetResponseService.patchMeetResponse(
             +meetId,
             token.userId,
             dto,
+        );
+    }
+
+    @Auth()
+    @Delete('/:responseId')
+    async deleteMeetResponse(
+        @Token() token: AccessTokenPayload,
+        @Param('meetId') meetId: string,
+    ) {
+        await this.meetResponseService.deleteMeetResponse(
+            +meetId,
+            token.userId,
         );
     }
 }

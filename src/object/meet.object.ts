@@ -35,6 +35,9 @@ export class MeetObject implements MeetDto {
         meetObject.dates = JSON.parse(meet.dates);
         meetObject.startTimeAt = meet.startTimeAt;
         meetObject.endTimeAt = meet.endTimeAt;
+        meetObject.responses = meet?.responses?.map((response) =>
+            MeetResponseObject.from(response),
+        );
 
         if (meet.creatorType === 'user') {
             meetObject.creator = {
