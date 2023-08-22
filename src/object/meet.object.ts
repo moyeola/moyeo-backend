@@ -1,7 +1,6 @@
 import { MeetDto } from 'moyeo-object';
 import { MeetResponseObject } from './meetResponse.object';
 import { UserObject } from './user.object';
-import { GroupObject } from './group.object';
 import { MemberObject } from './member.object';
 import { MeetEntity } from '@/entity/meet.entity';
 
