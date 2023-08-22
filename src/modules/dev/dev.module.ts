@@ -7,11 +7,11 @@ import { DevAuthService } from './dev.auth.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  controllers: [DevController],
-  providers: [DevService, DevAuthService],
-  imports: [
-    AuthModule,
-    TypeOrmModule.forFeature([UserEntity, PermissionEntity]),
-  ],
+    controllers: [DevController],
+    providers: [DevService, DevAuthService],
+    imports: [
+        AuthModule,
+        TypeOrmModule.forFeature([UserEntity, PermissionEntity]),
+    ],
 })
 export class DevModule {}

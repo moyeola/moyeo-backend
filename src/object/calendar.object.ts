@@ -1,21 +1,30 @@
-import { CalendarDto } from 'moyeo-object';
+import { CalendarDto, GroupDto, UserDto } from 'moyeo-object';
 import { GroupObject } from './group.object';
 import { CalendarEntity } from '@/entity';
 
 export class CalendarObject implements CalendarDto {
-  id: number;
-  group: GroupObject;
-  createdAt: string;
-  updatedAt: string;
+    id: number;
+    createdAt: string;
+    updatedAt: string;
 
-  static from(calendar: CalendarEntity): CalendarObject {
-    const calendarObject = new CalendarObject();
+    owner:
+        | { type: 'user'; user?: UserDto }
+        | { type: 'group'; group?: GroupDto };
 
-    calendarObject.id = calendar.id;
-    calendarObject.group = GroupObject.from(calendar.group);
-    calendarObject.createdAt = calendar.createdAt.toISOString();
-    calendarObject.updatedAt = calendar.updatedAt.toISOString();
+    static from(calendar: CalendarEntity): CalendarObject {
+        const calendarObject = new CalendarObject();
 
-    return calendarObject;
-  }
+        calendarObject.id = calendar.id;
+        calendarObject.createdAt = calendar.createdAt.toISOString();
+        calendarObject.updatedAt = calendar.updatedAt.toISOString();
+
+        if ('group' in calendar.group) {
+            calendarObject.owner = {
+                type: 'group',
+                group: GroupObject.from(calendar.group),
+            };
+        }
+
+        return calendarObject;
+    }
 }

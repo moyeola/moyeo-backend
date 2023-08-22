@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 
 export class PatchGroupMemberReqDto {
-  @IsString()
-  @IsOptional()
-  nickname?: string;
+    @IsString()
+    @IsOptional()
+    nickname?: string;
 }

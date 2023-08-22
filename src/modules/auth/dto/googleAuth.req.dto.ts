@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class GoogleAuthReqDto {
-  @IsString()
-  @IsNotEmpty()
-  token: string;
+    @IsString()
+    @IsNotEmpty()
+    token: string;
 
-  @IsOptional()
-  @IsString()
-  redirectUri: string;
+    @IsOptional()
+    @IsString()
+    redirectUri: string;
 }

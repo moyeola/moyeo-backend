@@ -6,16 +6,16 @@ import { CalendarEntity, CalendarEventEntity, MemberEntity } from '@/entity';
 import { CalendarEventModule } from './modules/event/event.module';
 
 @Module({
-  controllers: [CalendarController],
-  providers: [CalendarService],
-  imports: [
-    TypeOrmModule.forFeature([
-      CalendarEntity,
-      CalendarEventEntity,
-      MemberEntity,
-    ]),
-    CalendarEventModule,
-  ],
-  exports: [CalendarService],
+    controllers: [CalendarController],
+    providers: [CalendarService],
+    imports: [
+        TypeOrmModule.forFeature([
+            CalendarEntity,
+            CalendarEventEntity,
+            MemberEntity,
+        ]),
+        CalendarEventModule,
+    ],
+    exports: [CalendarService],
 })
 export class CalendarModule {}

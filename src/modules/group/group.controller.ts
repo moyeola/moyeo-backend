@@ -7,30 +7,30 @@ import { Auth } from '../auth/decorator/auth.decorator';
 @Auth()
 @Controller('groups')
 export class GroupController {
-  constructor(private readonly groupService: GroupService) {}
+    constructor(private readonly groupService: GroupService) {}
 
-  @Get(':groupId')
-  async getGroup(@Param('groupId') groupId: string): Promise<GetGroupRes> {
-    const group = await this.groupService.getGroup(parseInt(groupId));
-    return {
-      group,
-    };
-  }
+    @Get(':groupId')
+    async getGroup(@Param('groupId') groupId: string): Promise<GetGroupRes> {
+        const group = await this.groupService.getGroup(parseInt(groupId));
+        return {
+            group,
+        };
+    }
 
-  @Patch(':groupId')
-  async patchGroup(
-    @Param('groupId') groupId: string,
-    @Body() dto: PatchGroupReqDto,
-  ): Promise<PatchGroupRes> {
-    await this.groupService.patchGroup(parseInt(groupId), dto);
-    return;
-  }
+    @Patch(':groupId')
+    async patchGroup(
+        @Param('groupId') groupId: string,
+        @Body() dto: PatchGroupReqDto,
+    ): Promise<PatchGroupRes> {
+        await this.groupService.patchGroup(parseInt(groupId), dto);
+        return;
+    }
 
-  @Delete(':groupId')
-  async deleteGroup(
-    @Param('groupId') groupId: string,
-  ): Promise<DeleteGroupRes> {
-    await this.groupService.deleteGroup(parseInt(groupId));
-    return;
-  }
+    @Delete(':groupId')
+    async deleteGroup(
+        @Param('groupId') groupId: string,
+    ): Promise<DeleteGroupRes> {
+        await this.groupService.deleteGroup(parseInt(groupId));
+        return;
+    }
 }
