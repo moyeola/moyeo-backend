@@ -6,3 +6,5 @@ export * from './member.entity';
 export * from './report.entity';
 export * from './calendar.entity';
 export * from './calendarEvent.entity';
+export * from './meet.entity';
+export * from './meetResponse.entity';
