@@ -84,7 +84,7 @@ export class CalendarEventService {
                     id: userId,
                 },
                 group: {
-                    id: calendar.group.id,
+                    id: calendar.ownerGroup.id,
                 },
             },
         });

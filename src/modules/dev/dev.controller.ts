@@ -52,4 +52,10 @@ export class DevController {
             ),
         };
     }
+
+    @Post('user')
+    @UseGuards(DevOnlyGuard)
+    createUser(@Body() dto: { name: string; profileImageUrl: string }) {
+        return this.devService.createUser(dto);
+    }
 }
