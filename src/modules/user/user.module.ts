@@ -14,5 +14,6 @@ import { CalendarModule } from '../calendar/calendar.module';
         UserReportModule,
         CalendarModule,
     ],
+    exports: [UserService],
 })
 export class UserModule {}
