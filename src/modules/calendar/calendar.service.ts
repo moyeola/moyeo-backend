@@ -1,4 +1,9 @@
-import { CalendarEntity, GroupEntity, MemberEntity } from '@/entity';
+import {
+    CalendarEntity,
+    GroupEntity,
+    MemberEntity,
+    UserEntity,
+} from '@/entity';
 import { CalendarObject } from '@/object/calendar.object';
 import {
     ForbiddenException,
@@ -17,8 +22,22 @@ export class CalendarService {
         private readonly memberRepository: Repository<MemberEntity>,
     ) {}
 
-    async createCalendar(group: GroupEntity) {
-        const calendar = CalendarEntity.create(group);
+    async createCalendar(data: {
+        name?: string;
+        owner:
+            | {
+                  type: 'group';
+                  group: GroupEntity;
+              }
+            | {
+                  type: 'user';
+                  user: UserEntity;
+              };
+    }) {
+        const calendar = CalendarEntity.create({
+            name: data.name,
+            owner: data.owner,
+        });
         return this.calendarRepository.save(calendar);
     }
 
@@ -28,8 +47,12 @@ export class CalendarService {
         });
     }
 
-    async patchCalendar(calendarId: number, data: any) {
-        // TODO: 추후 Calendar에 수정 가능한 요소가 생기면 활용
+    async patchCalendar(
+        calendarId: number,
+        data: {
+            name?: string;
+        },
+    ) {
         const calendar = await this.calendarRepository.findOne({
             where: {
                 id: calendarId,
@@ -46,7 +69,9 @@ export class CalendarService {
             {
                 id: calendarId,
             },
-            {},
+            {
+                name: data.name,
+            },
         );
     }
 
@@ -84,7 +109,7 @@ export class CalendarService {
                     id: userId,
                 },
                 group: {
-                    id: calendar.group.id,
+                    id: calendar.ownerGroup.id,
                 },
             },
         });

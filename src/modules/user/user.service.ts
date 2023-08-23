@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@/entity';
 import { UserObject } from '@/object';
 import { Repository } from 'typeorm';
+import { CalendarService } from '../calendar/calendar.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
+        private readonly calendarService: CalendarService,
     ) {}
 
     async getUser(userId: number): Promise<UserObject> {
@@ -31,6 +33,16 @@ export class UserService {
         data: Parameters<typeof UserEntity.create>[0],
     ): Promise<UserEntity> {
         const user = UserEntity.create(data);
+
+        // 개인 캘린더 생성
+        await this.calendarService.createCalendar({
+            name: user.name,
+            owner: {
+                type: 'user',
+                user,
+            },
+        });
+
         return await this.userRepository.save(user);
     }
 

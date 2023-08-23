@@ -43,7 +43,13 @@ export class GroupService {
         await this.memberRepository.save(member);
 
         // 그룹 캘린더 생성
-        await this.calendarService.createCalendar(group);
+        await this.calendarService.createCalendar({
+            name: group.name,
+            owner: {
+                type: 'group',
+                group,
+            },
+        });
 
         return group;
     }
