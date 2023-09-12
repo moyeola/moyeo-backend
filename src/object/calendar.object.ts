@@ -5,6 +5,7 @@ import { UserObject } from './user.object';
 
 export class CalendarObject implements CalendarDto {
     id: number;
+    name: string;
     createdAt: string;
     updatedAt: string;
     owner:

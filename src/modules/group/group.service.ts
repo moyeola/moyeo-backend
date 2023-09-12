@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
+import { GetGroupRes } from 'moyeo-object';
 
 @Injectable()
 export class GroupService {
@@ -54,7 +55,7 @@ export class GroupService {
         return GroupObject.from(group);
     }
 
-    async getGroup(groupId: number) {
+    async getGroup(groupId: number): Promise<GetGroupRes['group']> {
         const group = await this.groupRepository.findOne({
             where: {
                 id: groupId,
@@ -68,7 +69,7 @@ export class GroupService {
             });
         }
 
-        const groupDto = GroupObject.from(group);
+        const groupDto = GroupObject.from(group) as GetGroupRes['group'];
         return groupDto;
     }
 
