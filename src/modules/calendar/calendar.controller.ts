@@ -6,7 +6,7 @@ import { Token } from '../auth/decorator/token.decorator';
 import { GetCalendarRes, GetCalendarsRes } from 'moyeo-object';
 import { PatchCalendarReqDto } from './dto/PatchCalendar.req.dto';
 import { SearchCalendarReqDto } from './dto/SearchCalendar.req.dto';
-import { CalendarObject } from '@/object';
+import { CalendarObject } from '../../object/calendar.object';
 
 @Auth()
 @Controller('calendars')
