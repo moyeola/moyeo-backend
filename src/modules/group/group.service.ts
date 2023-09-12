@@ -51,7 +51,7 @@ export class GroupService {
             },
         });
 
-        return group;
+        return GroupObject.from(group);
     }
 
     async getGroup(groupId: number) {
@@ -70,6 +70,17 @@ export class GroupService {
 
         const groupDto = GroupObject.from(group);
         return groupDto;
+    }
+
+    async getGroups(userId: number) {
+        const groups = await this.groupRepository
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.members', 'member')
+            .leftJoinAndSelect('member.user', 'user')
+            .execute();
+
+        const groupDtos = groups.map((group) => GroupObject.from(group));
+        return groupDtos;
     }
 
     async patchGroup(

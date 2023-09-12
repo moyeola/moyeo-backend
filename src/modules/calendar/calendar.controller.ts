@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { Auth } from '../auth/decorator/auth.decorator';
 import { CalendarService } from './calendar.service';
 import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
 import { Token } from '../auth/decorator/token.decorator';
 import { GetCalendarRes, GetCalendarsRes } from 'moyeo-object';
 import { PatchCalendarReqDto } from './dto/PatchCalendar.req.dto';
+import { SearchCalendarReqDto } from './dto/SearchCalendar.req.dto';
+import { CalendarObject } from '@/object';
 
 @Auth()
 @Controller('calendars')
@@ -20,6 +22,25 @@ export class CalendarController {
         );
         return {
             calendars,
+        };
+    }
+
+    @Get('/search')
+    async searchCalendars(
+        @Token() token: AccessTokenPayload,
+        @Query() dto: SearchCalendarReqDto,
+    ) {
+        const calendars = await this.calendarService.getCalendarsByOwner(
+            {
+                type: dto.ownerType,
+                ownerId: parseInt(dto.ownerId),
+            },
+            token.userId,
+        );
+        return {
+            calendars: calendars.map((calendar) =>
+                CalendarObject.from(calendar),
+            ),
         };
     }
 

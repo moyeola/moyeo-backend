@@ -44,6 +44,52 @@ export class CalendarService {
     async getCalendarById(id: number): Promise<CalendarEntity> {
         return this.calendarRepository.findOne({
             where: { id },
+            relations: ['ownerGroup', 'ownerUser'],
+        });
+    }
+
+    async getCalendarsByOwner(
+        owner: {
+            type: 'user' | 'group';
+            ownerId: number;
+        },
+        userId: number,
+    ): Promise<CalendarEntity[]> {
+        if (owner.type === 'group') {
+            const member = await this.memberRepository.findOne({
+                where: {
+                    user: {
+                        id: userId,
+                    },
+                    group: {
+                        id: owner.ownerId,
+                    },
+                },
+                relations: [],
+            });
+
+            if (!member) {
+                throw new ForbiddenException({
+                    code: 'forbidden',
+                });
+            }
+        }
+
+        if (owner.type === 'user' && owner.ownerId !== userId) {
+            throw new ForbiddenException({
+                code: 'forbidden',
+            });
+        }
+
+        return this.calendarRepository.find({
+            where: {
+                ownerType: owner.type,
+                ownerGroup:
+                    owner.type === 'group' ? { id: owner.ownerId } : undefined,
+                ownerUser:
+                    owner.type === 'user' ? { id: owner.ownerId } : undefined,
+            },
+            relations: ['ownerGroup', 'ownerUser'],
         });
     }
 
@@ -57,6 +103,7 @@ export class CalendarService {
             where: {
                 id: calendarId,
             },
+            relations: ['ownerGroup', 'ownerUser'],
         });
 
         if (!calendar) {
@@ -94,12 +141,18 @@ export class CalendarService {
             where: {
                 id: calendarId,
             },
-            relations: ['group'],
+            relations: ['ownerGroup'],
         });
 
         if (!calendar) {
             throw new NotFoundException({
                 code: 'calendar_not_found',
+            });
+        }
+
+        if (calendar.ownerType !== 'group') {
+            throw new ForbiddenException({
+                code: 'forbidden',
             });
         }
 
@@ -109,7 +162,7 @@ export class CalendarService {
                     id: userId,
                 },
                 group: {
-                    id: calendar.ownerGroup.id,
+                    id: calendar?.ownerGroup?.id,
                 },
             },
         });

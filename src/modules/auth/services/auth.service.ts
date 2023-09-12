@@ -18,11 +18,16 @@ export class AuthService {
     ) {}
 
     async googleAuth(
-        token: string,
+        code: string,
         redirectUri?: string,
     ): Promise<GoogleAuthResDto> {
+        const tokens = await this.googleAuthService.getTokens(
+            code,
+            redirectUri,
+        );
+
         const profile = await this.googleAuthService.getUserProfile(
-            token,
+            tokens,
             redirectUri,
         );
         let auth = await this.getAuth(profile.id, 'google');
@@ -44,7 +49,7 @@ export class AuthService {
             oAuthId: profile.id,
             oAuth: 'google',
 
-            oAuthAccessToken: token,
+            oAuthAccessToken: code,
             oAuthEmail: profile.email,
             oAuthRefreshToken: '',
             user,
