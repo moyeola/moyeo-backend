@@ -4,6 +4,7 @@ import { UserEntity } from '@/entity';
 import { UserObject } from '@/object';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
+import { GetUserMeRes } from 'moyeo-object';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
         private readonly calendarService: CalendarService,
     ) {}
 
-    async getUser(userId: number): Promise<UserObject> {
+    async getUser(userId: number): Promise<GetUserMeRes['user']> {
         const user = await this.userRepository.findOne({
             where: {
                 id: userId,
@@ -26,7 +27,7 @@ export class UserService {
                 code: 'user_not_found',
             });
 
-        return UserObject.from(user);
+        return UserObject.from(user) as GetUserMeRes['user'];
     }
 
     async createUser(

@@ -56,8 +56,9 @@ export class CalendarController {
         const calendar = await this.calendarService.getCalendarById(
             +calendarId,
         );
+        const calendarObject = CalendarObject.from(calendar);
         return {
-            calendar,
+            calendar: calendarObject,
         };
     }
 
