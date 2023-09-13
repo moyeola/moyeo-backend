@@ -90,6 +90,7 @@ export class GroupService {
         data: {
             name?: string;
             description?: string;
+            status?: 'ACTIVE' | 'INACTIVE';
         },
     ) {
         const group = await this.groupRepository.findOne({
