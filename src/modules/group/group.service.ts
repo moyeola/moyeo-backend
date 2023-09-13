@@ -60,7 +60,7 @@ export class GroupService {
             where: {
                 id: groupId,
             },
-            relations: ['members'],
+            relations: ['members', 'members.user', 'members.user.permissions'],
         });
 
         if (!group) {
