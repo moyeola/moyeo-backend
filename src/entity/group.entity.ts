@@ -17,6 +17,11 @@ export class GroupEntity extends BaseEntity {
     @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
     description?: string;
 
+    @Column({
+        default: 'ACTIVE',
+    })
+    status: 'ACTIVE' | 'INACTIVE';
+
     @OneToMany(() => MemberEntity, (member) => member.group)
     members: MemberEntity[];
 
@@ -24,6 +29,7 @@ export class GroupEntity extends BaseEntity {
         const group = new GroupEntity();
         group.name = name;
         group.description = description;
+        group.status = 'ACTIVE';
 
         return group;
     }

@@ -11,4 +11,8 @@ export class PatchGroupReqDto {
     @IsString()
     @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
     description?: string;
+
+    @IsOptional()
+    @IsString()
+    status?: 'ACTIVE' | 'INACTIVE';
 }

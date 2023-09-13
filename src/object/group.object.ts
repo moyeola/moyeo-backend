@@ -7,6 +7,7 @@ export class GroupObject implements GroupDto {
     name: string;
     description?: string;
     createdAt: string;
+    status: 'ACTIVE' | 'INACTIVE';
 
     members?: MemberObject[];
 
@@ -16,6 +17,8 @@ export class GroupObject implements GroupDto {
         groupObject.id = group.id;
         groupObject.name = group.name;
         groupObject.description = group.description;
+        groupObject.status = group.status;
+        groupObject.createdAt = group.createdAt.toISOString();
 
         if ('members' in group) {
             groupObject.members = group.members
