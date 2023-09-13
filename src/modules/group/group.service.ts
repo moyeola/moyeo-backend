@@ -1,4 +1,4 @@
-import { GroupEntity, MemberEntity, UserEntity } from '@/entity';
+import { GroupEntity, GroupRole, MemberEntity, UserEntity } from '@/entity';
 import { GroupObject } from '@/object';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -41,6 +41,7 @@ export class GroupService {
         group = await this.groupRepository.save(group);
 
         const member = MemberEntity.create(user, group);
+        member.role = GroupRole.OWNER;
         await this.memberRepository.save(member);
 
         // 그룹 캘린더 생성
