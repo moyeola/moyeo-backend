@@ -3,6 +3,7 @@ import {
     ExecutionContext,
     ForbiddenException,
     Injectable,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { TokenService } from './services/token.service';
 import { Request } from 'express';
@@ -23,7 +24,7 @@ export class AuthGuard implements CanActivate {
         const res = this.tokenService.verifyAccessToken(JWTString);
 
         if (!res.isValid) {
-            throw new ForbiddenException({
+            throw new UnauthorizedException({
                 code: 'wrong_token',
             });
         }
@@ -53,7 +54,7 @@ export class RoleGuard implements CanActivate {
         const res = this.tokenService.verifyAccessToken(JWTString);
 
         if (!res.isValid) {
-            throw new ForbiddenException({
+            throw new UnauthorizedException({
                 code: 'wrong_token',
             });
         }

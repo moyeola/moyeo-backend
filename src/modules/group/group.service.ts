@@ -126,6 +126,12 @@ export class GroupService {
             });
         }
 
+        await this.memberRepository.softDelete({
+            group: {
+                id: groupId,
+            },
+        });
+
         await this.groupRepository.softDelete({
             id: groupId,
         });
