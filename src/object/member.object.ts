@@ -19,11 +19,11 @@ export class MemberObject implements MemberDto {
         memberObject.nickname = member.nickname;
         memberObject.role = member.role;
 
-        if ('user' in member && !('members' in member.user)) {
+        if (member?.user && !member?.user?.members) {
             memberObject.user = UserObject.from(member.user);
         }
 
-        if ('group' in member && !('members' in member.group)) {
+        if (member?.group && !member.group.members) {
             memberObject.group = GroupObject.from(member.group);
         }
 
