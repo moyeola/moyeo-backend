@@ -79,7 +79,9 @@ export class GroupService {
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.members', 'member')
             .leftJoinAndSelect('member.user', 'user')
-            .execute();
+            .leftJoinAndSelect('user.permissions', 'permission')
+            .where('member.user.id = :userId', { userId })
+            .getMany();
 
         const groupDtos = groups.map((group) => GroupObject.from(group));
         return groupDtos;
