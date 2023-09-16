@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseEntity } from './common/baseEntity';
 import { NotificationAction } from 'moyeo-object';
+import { UserEntity } from './user.entity';
 
 export enum NotificationTypeEnum {
     'GROUP_SCHEDULE' = 'GROUP_SCHEDULE',
@@ -51,6 +52,9 @@ export class NotificationEntity extends BaseEntity {
     get parsedAction(): NotificationAction {
         return JSON.parse(this.action);
     }
+
+    @ManyToOne(() => UserEntity)
+    user: UserEntity;
 
     static create(data: {
         title: string;

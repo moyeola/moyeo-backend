@@ -27,7 +27,7 @@ export class MeetResponseObject implements MeetResponseDto {
     times: {
         start: string;
         end: string;
-    };
+    }[];
 
     static from(meetResponse: MeetResponseEntity): MeetResponseObject {
         const meetResponseObject = new MeetResponseObject();

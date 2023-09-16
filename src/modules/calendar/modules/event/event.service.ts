@@ -22,12 +22,12 @@ export class CalendarEventService {
     async getCalendarEventsByCalendarId(
         calendarId: number,
     ): Promise<CalendarEventObject[]> {
-        const calendar = await this.calendarRepository.findOne({
-            where: { id: calendarId },
-        });
-
         const events = await this.calendarEventRepository.find({
-            where: { calendar },
+            where: {
+                calendar: {
+                    id: calendarId,
+                },
+            },
         });
 
         return events.map((event) => CalendarEventObject.from(event));
@@ -84,7 +84,7 @@ export class CalendarEventService {
                     id: userId,
                 },
                 group: {
-                    id: calendar.ownerGroup.id,
+                    id: calendar.group.id,
                 },
             },
         });

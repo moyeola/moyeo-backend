@@ -46,7 +46,6 @@ export class GroupService {
 
         // 그룹 캘린더 생성
         await this.calendarService.createCalendar({
-            name: group.name,
             owner: {
                 type: 'group',
                 group,

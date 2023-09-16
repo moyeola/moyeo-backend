@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarEntity, UserEntity } from '@/entity';
 import { UserReportModule } from './modules/report/userReport.module';
 import { CalendarModule } from '../calendar/calendar.module';
+import { UserNotificationModule } from './modules/notification/notification.module';
 
 @Module({
     controllers: [UserController],
@@ -13,6 +14,7 @@ import { CalendarModule } from '../calendar/calendar.module';
         TypeOrmModule.forFeature([UserEntity, CalendarEntity]),
         UserReportModule,
         CalendarModule,
+        UserNotificationModule,
     ],
     exports: [UserService],
 })

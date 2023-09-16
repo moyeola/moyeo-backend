@@ -151,6 +151,7 @@ export class MeetResponseService {
                 where: {
                     id: data.responser.memberId,
                 },
+                relations: ['user'],
             });
             if (!member) {
                 throw new NotFoundException({
