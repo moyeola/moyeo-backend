@@ -13,20 +13,24 @@ export class CalendarObject implements CalendarDto {
         | { type: 'group'; group?: GroupDto };
 
     static from(calendar: CalendarEntity): CalendarObject {
+        console.log(calendar);
+
         const calendarObject = new CalendarObject();
         calendarObject.id = calendar.id;
+        calendarObject.name =
+            calendar?.name || calendar?.group?.name || calendar?.user?.name;
         calendarObject.createdAt = calendar.createdAt.toISOString();
         calendarObject.updatedAt = calendar.updatedAt.toISOString();
 
         if (calendar.ownerType === 'group') {
             calendarObject.owner = {
                 type: 'group',
-                group: GroupObject.from(calendar.ownerGroup),
+                group: GroupObject.from(calendar.group),
             };
         } else if (calendar.ownerType === 'user') {
             calendarObject.owner = {
                 type: 'user',
-                user: UserObject.from(calendar.ownerUser),
+                user: UserObject.from(calendar.user),
             };
         }
 

@@ -53,7 +53,37 @@ export class MeetService {
                     },
                 },
             ],
-            relations: ['creatorUser', 'creatorMember', 'creatorMember.group'],
+            relations: [
+                'creatorUser',
+                'creatorMember',
+                'creatorMember.group',
+                'responses',
+                'responses.responserUser',
+                'responses.responserMember',
+                'responses.responserMember.group',
+            ],
+        });
+        return meets.map((meet) => MeetObject.from(meet));
+    }
+
+    async getMeetsByGroupId(groupId: number): Promise<MeetObject[]> {
+        const meets = await this.meetRepository.find({
+            where: {
+                creatorMember: {
+                    group: {
+                        id: groupId,
+                    },
+                },
+            },
+            relations: [
+                'creatorUser',
+                'creatorMember',
+                'creatorMember.group',
+                'responses',
+                'responses.responserUser',
+                'responses.responserMember',
+                'responses.responserMember.group',
+            ],
         });
         return meets.map((meet) => MeetObject.from(meet));
     }
@@ -108,13 +138,14 @@ export class MeetService {
                 where: {
                     id: data.creator.memberId,
                 },
+                relations: ['user'],
             });
             if (!member) {
                 throw new NotFoundException({
                     code: 'MEMBER_NOT_FOUND',
                 });
             }
-            if (member.user.id !== userId) {
+            if (member?.user?.id !== userId) {
                 throw new BadRequestException({
                     code: 'MEMBER_NOT_BELONG_TO_USER',
                 });

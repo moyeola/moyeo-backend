@@ -7,6 +7,7 @@ import {
     Param,
     Patch,
     Post,
+    Query,
 } from '@nestjs/common';
 import { MeetService } from './meet.service';
 import { Auth } from '../auth/decorator/auth.decorator';
@@ -14,6 +15,7 @@ import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
 import { Token } from '../auth/decorator/token.decorator';
 import { PostMeetReqDto } from './dto/PostMeet.req.dto';
 import { PatchMeetReq } from 'moyeo-object';
+import { GetMeetsReqDto } from './dto/GetMeets.req.dto';
 
 @Controller('meets')
 export class MeetController {
@@ -21,7 +23,26 @@ export class MeetController {
 
     @Auth()
     @Get('/')
-    async getMeets(@Token() token: AccessTokenPayload) {
+    async getMeets(
+        @Token() token: AccessTokenPayload,
+        @Query() query?: GetMeetsReqDto,
+    ) {
+        if (!query || query.creatorType === 'user') {
+            const meets = await this.meetService.getMeets(token.userId);
+            return {
+                meets,
+            };
+        }
+
+        if (query.creatorType === 'group') {
+            const meets = await this.meetService.getMeetsByGroupId(
+                query.creatorId,
+            );
+            return {
+                meets,
+            };
+        }
+
         const meets = await this.meetService.getMeets(token.userId);
         return {
             meets,

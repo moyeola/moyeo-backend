@@ -46,7 +46,6 @@ export class GroupService {
 
         // 그룹 캘린더 생성
         await this.calendarService.createCalendar({
-            name: group.name,
             owner: {
                 type: 'group',
                 group,
@@ -79,7 +78,9 @@ export class GroupService {
             .createQueryBuilder('group')
             .leftJoinAndSelect('group.members', 'member')
             .leftJoinAndSelect('member.user', 'user')
-            .execute();
+            .leftJoinAndSelect('user.permissions', 'permission')
+            .where('member.user.id = :userId', { userId })
+            .getMany();
 
         const groupDtos = groups.map((group) => GroupObject.from(group));
         return groupDtos;

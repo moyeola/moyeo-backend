@@ -6,3 +6,4 @@ export * from './calendar.object';
 export * from './calendarEvent.object';
 export * from './meet.object';
 export * from './meetResponse.object';
+export * from './notification.object';

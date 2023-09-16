@@ -44,7 +44,7 @@ export class CalendarService {
     async getCalendarById(id: number): Promise<CalendarEntity> {
         return this.calendarRepository.findOne({
             where: { id },
-            relations: ['ownerGroup', 'ownerUser'],
+            relations: ['group', 'user'],
         });
     }
 
@@ -84,12 +84,11 @@ export class CalendarService {
         return this.calendarRepository.find({
             where: {
                 ownerType: owner.type,
-                ownerGroup:
+                group:
                     owner.type === 'group' ? { id: owner.ownerId } : undefined,
-                ownerUser:
-                    owner.type === 'user' ? { id: owner.ownerId } : undefined,
+                user: owner.type === 'user' ? { id: owner.ownerId } : undefined,
             },
-            relations: ['ownerGroup', 'ownerUser'],
+            relations: ['group', 'user'],
         });
     }
 
@@ -103,7 +102,7 @@ export class CalendarService {
             where: {
                 id: calendarId,
             },
-            relations: ['ownerGroup', 'ownerUser'],
+            relations: ['group', 'user'],
         });
 
         if (!calendar) {
@@ -125,8 +124,8 @@ export class CalendarService {
     async getCalendarsByUserId(userId: number): Promise<CalendarObject[]> {
         const calendars = await this.calendarRepository
             .createQueryBuilder('calendar')
-            .leftJoin('calendar.group', 'group')
-            .leftJoin('group.members', 'member')
+            .leftJoinAndSelect('calendar.group', 'group')
+            .leftJoinAndSelect('group.members', 'member')
             .where('member.userId = :userId', { userId })
             .getMany();
 
@@ -141,7 +140,7 @@ export class CalendarService {
             where: {
                 id: calendarId,
             },
-            relations: ['ownerGroup'],
+            relations: ['group'],
         });
 
         if (!calendar) {
@@ -162,7 +161,7 @@ export class CalendarService {
                     id: userId,
                 },
                 group: {
-                    id: calendar?.ownerGroup?.id,
+                    id: calendar?.group?.id,
                 },
             },
         });

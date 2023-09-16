@@ -15,10 +15,10 @@ export class CalendarEntity extends BaseEntity {
     ownerType: 'group' | 'user';
 
     @ManyToOne(() => UserEntity)
-    ownerUser?: UserEntity;
+    user?: UserEntity;
 
     @ManyToOne(() => GroupEntity)
-    ownerGroup?: GroupEntity;
+    group?: GroupEntity;
 
     @OneToMany(
         () => CalendarEventEntity,
@@ -42,9 +42,9 @@ export class CalendarEntity extends BaseEntity {
         calendar.name = data.name;
         calendar.ownerType = data.owner.type;
         if (data.owner.type === 'group') {
-            calendar.ownerGroup = data.owner.group;
+            calendar.group = data.owner.group;
         } else if (data.owner.type === 'user') {
-            calendar.ownerUser = data.owner.user;
+            calendar.user = data.owner.user;
         }
 
         return calendar;

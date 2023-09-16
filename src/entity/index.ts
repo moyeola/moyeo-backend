@@ -8,3 +8,4 @@ export * from './calendar.entity';
 export * from './calendarEvent.entity';
 export * from './meet.entity';
 export * from './meetResponse.entity';
+export * from './notification.entity';
