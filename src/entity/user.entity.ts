@@ -1,4 +1,4 @@
-import { Auth, Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './common/baseEntity';
 import { IsNotEmpty, MaxLength } from 'class-validator';
 import { PermissionEntity } from './permission.entity';

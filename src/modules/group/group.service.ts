@@ -1,6 +1,10 @@
 import { GroupEntity, GroupRole, MemberEntity, UserEntity } from '@/entity';
-import { GroupObject } from '@/object';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { GroupObject, MemberObject } from '@/object';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
@@ -73,6 +77,22 @@ export class GroupService {
         return groupDto;
     }
 
+    async getGroupInviteCode(groupId: number) {
+        const group = await this.groupRepository.findOne({
+            where: {
+                id: groupId,
+            },
+        });
+
+        if (!group) {
+            throw new NotFoundException({
+                code: 'group_not_found',
+            });
+        }
+
+        return group.inviteCode;
+    }
+
     async getGroups(userId: number) {
         const groups = await this.groupRepository
             .createQueryBuilder('group')
@@ -136,5 +156,88 @@ export class GroupService {
         await this.groupRepository.softDelete({
             id: groupId,
         });
+    }
+
+    async postInviteMemberByInviteCode(userId: number, inviteCode: string) {
+        const group = await this.groupRepository.findOne({
+            where: {
+                inviteCode,
+            },
+        });
+
+        if (!group) {
+            throw new NotFoundException({
+                code: 'group_not_found',
+            });
+        }
+
+        const user = await this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            throw new NotFoundException({
+                code: 'user_not_found',
+            });
+        }
+
+        const existMember = await this.memberRepository.findOne({
+            where: {
+                user: {
+                    id: userId,
+                },
+                group: {
+                    id: group.id,
+                },
+            },
+        });
+
+        if (existMember) {
+            throw new ForbiddenException({
+                code: 'already_in_group',
+                groupId: group.id,
+            });
+        }
+
+        let member = MemberEntity.create(user, group);
+        member = await this.memberRepository.save(member);
+
+        member = await this.memberRepository.findOne({
+            where: {
+                id: member.id,
+            },
+            relations: ['user', 'group'],
+        });
+        return MemberObject.from(member);
+    }
+
+    async isUserInGroup(userId: number, groupId: number): Promise<boolean> {
+        const res = await this.memberRepository.find({
+            where: {
+                user: {
+                    id: userId,
+                },
+                group: {
+                    id: groupId,
+                },
+            },
+        });
+
+        return res.length > 0;
+    }
+
+    async checkMemberIsInGroup(
+        userId: number,
+        groupId: number,
+    ): Promise<boolean> {
+        const res = await this.isUserInGroup(userId, groupId);
+        if (!res) {
+            throw new NotFoundException({
+                code: 'group_not_found',
+            });
+        }
+        return true;
     }
 }

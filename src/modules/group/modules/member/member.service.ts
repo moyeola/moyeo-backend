@@ -129,6 +129,8 @@ export class MemberService {
         userId: number,
         memberId: number,
     ): Promise<boolean> {
+        console.log(userId, memberId);
+
         const res = await this.memberRepository.findOne({
             where: {
                 id: memberId,

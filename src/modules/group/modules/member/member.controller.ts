@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+} from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Auth } from '@/modules/auth/decorator/auth.decorator';
 import { Token } from '@/modules/auth/decorator/token.decorator';
@@ -41,7 +49,7 @@ export class MemberController {
         @Token() token: AccessTokenPayload,
         @Body() dto: PatchGroupMemberReqDto,
     ) {
-        await this.memberService.checkMemberIsUser(token.userId, +groupId);
+        await this.memberService.checkMemberIsUser(token.userId, +memberId);
         await this.memberService.patchMember(+memberId, dto);
         return;
     }
@@ -52,7 +60,7 @@ export class MemberController {
         @Param('memberId') memberId: string,
         @Token() token: AccessTokenPayload,
     ) {
-        await this.memberService.checkMemberIsUser(token.userId, +groupId);
+        await this.memberService.checkMemberIsUser(token.userId, +memberId);
         await this.memberService.deleteMember(+memberId);
         return;
     }
