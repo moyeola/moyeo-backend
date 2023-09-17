@@ -40,6 +40,11 @@ export class MeetEntity extends BaseEntity {
     @OneToMany(() => MeetResponseEntity, (meetResponse) => meetResponse.meet)
     responses: MeetResponseEntity[];
 
+    @Column({
+        default: 'PROGRESSING',
+    })
+    status: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
+
     static create(data: {
         title: string;
         description: string;
@@ -62,6 +67,7 @@ export class MeetEntity extends BaseEntity {
         meet.dates = JSON.stringify(data.dates);
         meet.startTimeAt = data.startTimeAt;
         meet.endTimeAt = data.endTimeAt;
+        meet.status = 'PROGRESSING';
         meet.creatorType = data.creator.type;
         if (data.creator.type === 'user') {
             meet.creatorUser = data.creator.user;

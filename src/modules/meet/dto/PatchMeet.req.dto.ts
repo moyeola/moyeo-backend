@@ -1,5 +1,11 @@
 import { CommonConstant } from '@/entity/constant/common.constant';
-import { IsArray, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+    IsArray,
+    IsEnum,
+    IsOptional,
+    IsString,
+    MaxLength,
+} from 'class-validator';
 
 export class PatchMeetReqDto {
     @IsOptional()
@@ -23,4 +29,8 @@ export class PatchMeetReqDto {
     @IsOptional()
     @IsString()
     endTimeAt?: string;
+
+    @IsOptional()
+    @IsEnum(['PROGRESSING', 'CONFIRMED', 'CANCELED'])
+    status?: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
 }

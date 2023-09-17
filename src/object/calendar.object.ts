@@ -13,8 +13,6 @@ export class CalendarObject implements CalendarDto {
         | { type: 'group'; group?: GroupDto };
 
     static from(calendar: CalendarEntity): CalendarObject {
-        console.log(calendar);
-
         const calendarObject = new CalendarObject();
         calendarObject.id = calendar.id;
         calendarObject.name =
