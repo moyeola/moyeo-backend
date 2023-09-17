@@ -55,7 +55,16 @@ export class DevController {
 
     @Post('user')
     @UseGuards(DevOnlyGuard)
-    createUser(@Body() dto: { name: string; profileImageUrl: string }) {
+    createUser(
+        @Body()
+        dto: {
+            name: string;
+            profileImageUrl: string;
+            email: string;
+            oAuth: string;
+            oAuthId: string;
+        },
+    ) {
         return this.devService.createUser(dto);
     }
 }

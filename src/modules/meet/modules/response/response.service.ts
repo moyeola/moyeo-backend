@@ -199,7 +199,12 @@ export class MeetResponseService {
             where: {
                 id,
             },
-            relations: ['meet', 'responserUser', 'responserMember'],
+            relations: [
+                'meet',
+                'responserUser',
+                'responserMember',
+                'responserMember.user',
+            ],
         });
         if (!meetResponse) {
             throw new NotFoundException({

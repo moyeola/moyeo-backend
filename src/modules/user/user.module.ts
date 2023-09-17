@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CalendarEntity, UserEntity } from '@/entity';
+import { AuthEntity, CalendarEntity, UserEntity } from '@/entity';
 import { UserReportModule } from './modules/report/userReport.module';
 import { CalendarModule } from '../calendar/calendar.module';
 import { UserNotificationModule } from './modules/notification/notification.module';
@@ -11,7 +11,7 @@ import { UserNotificationModule } from './modules/notification/notification.modu
     controllers: [UserController],
     providers: [UserService],
     imports: [
-        TypeOrmModule.forFeature([UserEntity, CalendarEntity]),
+        TypeOrmModule.forFeature([UserEntity, CalendarEntity, AuthEntity]),
         UserReportModule,
         CalendarModule,
         UserNotificationModule,

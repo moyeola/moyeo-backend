@@ -8,4 +8,8 @@ export class GetMeetsReqDto {
     @IsOptional()
     @IsString()
     creatorId?: number;
+
+    @IsOptional()
+    @IsString()
+    status?: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
 }

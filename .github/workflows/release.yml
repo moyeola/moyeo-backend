@@ -1,0 +1,66 @@
+name: Develop build&deploy
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Docker Setup QEMU
+              uses: docker/setup-qemu-action@v1.2.0
+
+            - name: Build and push
+              uses: docker/build-push-action@v4
+              with:
+                  context: .
+                  push: true
+                  tags: moyeo/moyeo-backend:${{ github.sha }}
+                  platforms: |
+                      linux/amd64
+
+            - name: Deploy to Server
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.DEV_SERVER_HOST }}
+                  username: ${{ secrets.DEV_SERVER_USERNAME }}
+                  key: ${{ secrets.DEV_SERVER_KEY }}
+                  script: |
+                      rm -rf .env
+                      echo "PORT=${{ secrets.OUT_PORT }}" >> .env
+                      echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+                      echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+                      echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+                      echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+                      echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+                      echo "DB_SYNCHRONIZE=true" >> .env
+                      echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+                      echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+                      echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+                      echo "GOOGLE_CLIENT_CALLBACK=${{ secrets.GOOGLE_CLIENT_CALLBACK }}" >> .env
+                      echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+                      echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+                      echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+                      echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
+                      echo "AWS_S3_URL=${{ secrets.AWS_S3_URL }}" >> .env
+                      echo "DEV_MASTER_TOKEN=${{ secrets.DEV_MASTER_TOKEN }}" >> .env
+
+                      docker stop moyeo-backend || true
+                      docker rm moyeo-backend || true
+                      docker pull moyeo/moyeo-backend:${{ github.sha }}
+                      docker run -it -d --name moyeo-backend --network host --env-file .env moyeo/moyeo-backend:${{ github.sha }}

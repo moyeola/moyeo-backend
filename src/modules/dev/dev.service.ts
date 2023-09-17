@@ -19,7 +19,13 @@ export class DevService {
         return this.tokenService.createAccessToken(userId, permissions);
     }
 
-    async createUser(data: { name: string; profileImageUrl: string }) {
+    async createUser(data: {
+        name: string;
+        profileImageUrl: string;
+        email: string;
+        oAuth: string;
+        oAuthId: string;
+    }) {
         const user = await this.userService.createUser(data);
         const token = this.createAccessToken(user.id, []);
 

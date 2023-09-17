@@ -13,6 +13,7 @@ import { Auth } from '@/modules/auth/decorator/auth.decorator';
 import { Token } from '@/modules/auth/decorator/token.decorator';
 import { AccessTokenPayload } from '@/modules/auth/types/accessTokenPayload';
 import { PostMeetResponseReqDto } from './dto/PostMeetResponse.req.dto';
+import { PatchMeetResponseReqDto } from './dto/PatchMeetRespoonse.req.dto';
 
 @Controller('meets/:meetId/responses')
 export class MeetResponseController {
@@ -50,11 +51,11 @@ export class MeetResponseController {
     @Patch('/:responseId')
     async patchMeetResponse(
         @Token() token: AccessTokenPayload,
-        @Param('meetId') meetId: string,
-        @Body() dto: PostMeetResponseReqDto,
+        @Param('responseId') responseId: string,
+        @Body() dto: PatchMeetResponseReqDto,
     ) {
         await this.meetResponseService.patchMeetResponse(
-            +meetId,
+            +responseId,
             token.userId,
             dto,
         );

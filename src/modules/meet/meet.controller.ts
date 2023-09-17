@@ -14,7 +14,6 @@ import { Auth } from '../auth/decorator/auth.decorator';
 import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
 import { Token } from '../auth/decorator/token.decorator';
 import { PostMeetReqDto } from './dto/PostMeet.req.dto';
-import { PatchMeetReq } from 'moyeo-object';
 import { GetMeetsReqDto } from './dto/GetMeets.req.dto';
 import { PatchMeetReqDto } from './dto/PatchMeet.req.dto';
 
@@ -29,7 +28,9 @@ export class MeetController {
         @Query() query?: GetMeetsReqDto,
     ) {
         if (!query || query.creatorType === 'user') {
-            const meets = await this.meetService.getMeets(token.userId);
+            const meets = await this.meetService.getMeets(token.userId, {
+                status: query?.status,
+            });
             return {
                 meets,
             };
@@ -38,13 +39,18 @@ export class MeetController {
         if (query.creatorType === 'group') {
             const meets = await this.meetService.getMeetsByGroupId(
                 query.creatorId,
+                {
+                    status: query?.status,
+                },
             );
             return {
                 meets,
             };
         }
 
-        const meets = await this.meetService.getMeets(token.userId);
+        const meets = await this.meetService.getMeets(token.userId, {
+            status: query?.status,
+        });
         return {
             meets,
         };
@@ -75,8 +81,8 @@ export class MeetController {
         @Body() dto: PatchMeetReqDto,
     ) {
         const isUserCreator = await this.meetService.isUserCreator(
-            +meetId,
             token.userId,
+            +meetId,
         );
         if (!isUserCreator) {
             throw new BadRequestException({
@@ -94,8 +100,8 @@ export class MeetController {
         @Param('meetId') meetId: string,
     ) {
         const isUserCreator = await this.meetService.isUserCreator(
-            +meetId,
             token.userId,
+            +meetId,
         );
         if (!isUserCreator) {
             throw new BadRequestException({

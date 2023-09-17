@@ -21,6 +21,9 @@ export class UserEntity extends BaseEntity {
     )
     name: string;
 
+    @Column({})
+    email: string;
+
     @Column({ type: 'text' })
     profileImageUrl: string;
 
@@ -38,17 +41,20 @@ export class UserEntity extends BaseEntity {
     permissions: PermissionEntity[];
 
     @OneToMany(() => AuthEntity, (auth) => auth.user)
-    auth: Auth;
+    auth: AuthEntity;
 
     static create({
         name,
+        email,
         profileImageUrl,
     }: {
         name: string;
+        email: string;
         profileImageUrl: string;
     }): UserEntity {
         const user = new UserEntity();
         user.name = name;
+        user.email = email;
         user.profileImageUrl = profileImageUrl;
 
         return user;
