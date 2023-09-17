@@ -12,6 +12,13 @@ export class GroupEntity extends BaseEntity {
     name: string;
 
     @Column({
+        unique: true,
+        nullable: false,
+    })
+    @IsNotEmpty()
+    inviteCode: string;
+
+    @Column({
         nullable: true,
     })
     @MaxLength(CommonConstant.GROUP_DESCRIPTION_MAX_LENGTH)
@@ -30,6 +37,7 @@ export class GroupEntity extends BaseEntity {
         group.name = name;
         group.description = description;
         group.status = 'ACTIVE';
+        group.inviteCode = Math.random().toString(36).slice(2, 11);
 
         return group;
     }
