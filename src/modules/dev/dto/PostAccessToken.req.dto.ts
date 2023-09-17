@@ -1,9 +1,9 @@
 import { IsArray, IsNumber } from 'class-validator';
 
 export class PostAccessTokenReqDto {
-  @IsNumber()
-  userId: number;
+    @IsNumber()
+    userId: number;
 
-  @IsArray()
-  permissions: string[];
+    @IsArray()
+    permissions: string[];
 }

@@ -1,11 +1,10 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Post,
-  UnauthorizedException,
-  UseGuards,
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    Post,
+    UseGuards,
 } from '@nestjs/common';
 import { DevService } from './dev.service';
 import { DevOnlyGuard } from './dev.guard';
@@ -15,40 +14,57 @@ import { DevAuthService } from './dev.auth.service';
 
 @Controller('dev')
 export class DevController {
-  constructor(
-    private readonly devService: DevService,
-    private readonly devAuthService: DevAuthService,
-  ) {}
+    constructor(
+        private readonly devService: DevService,
+        private readonly devAuthService: DevAuthService,
+    ) {}
 
-  @Get()
-  getDev() {
-    return {
-      message: 'Hello World!',
-    };
-  }
-
-  @Post('auth')
-  auth(@Body() dto: PostDevAuthReqDto) {
-    if (dto.masterToken === process.env.DEV_MASTER_TOKEN) {
-      const devToken = this.devAuthService.createDevToken(dto.developerName);
-      return {
-        devToken,
-      };
-    } else {
-      throw new BadRequestException({
-        code: 'wrong_token',
-      });
+    @Get()
+    getDev() {
+        return {
+            message: 'Hello World!',
+        };
     }
-  }
 
-  @Post('access-token')
-  @UseGuards(DevOnlyGuard)
-  accessToken(@Body() dto: PostAccessTokenReqDto) {
-    return {
-      accessToken: this.devService.createAccessToken(
-        dto.userId,
-        dto.permissions,
-      ),
-    };
-  }
+    @Post('auth')
+    auth(@Body() dto: PostDevAuthReqDto) {
+        if (dto.masterToken === process.env.DEV_MASTER_TOKEN) {
+            const devToken = this.devAuthService.createDevToken(
+                dto.developerName,
+            );
+            return {
+                devToken,
+            };
+        } else {
+            throw new BadRequestException({
+                code: 'wrong_token',
+            });
+        }
+    }
+
+    @Post('access-token')
+    @UseGuards(DevOnlyGuard)
+    accessToken(@Body() dto: PostAccessTokenReqDto) {
+        return {
+            accessToken: this.devService.createAccessToken(
+                dto.userId,
+                dto.permissions,
+            ),
+        };
+    }
+
+    @Post('user')
+    @UseGuards(DevOnlyGuard)
+    createUser(
+        @Body()
+        dto: {
+            name: string;
+            profileImageUrl: string;
+            email: string;
+            oAuth: string;
+            oAuthId: string;
+        },
+    ) {
+        return this.devService.createUser(dto);
+    }
 }

@@ -9,57 +9,71 @@ import { GoogleAuthResDto } from '../dto/googleAuth.res.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(AuthEntity)
-    private authRepository: Repository<AuthEntity>,
-    private googleAuthService: GoogleAuthService,
-    private tokenService: TokenService,
-    private userService: UserService,
-  ) {}
+    constructor(
+        @InjectRepository(AuthEntity)
+        private authRepository: Repository<AuthEntity>,
+        private googleAuthService: GoogleAuthService,
+        private tokenService: TokenService,
+        private userService: UserService,
+    ) {}
 
-  async googleAuth(token: string): Promise<GoogleAuthResDto> {
-    const profile = await this.googleAuthService.getUserProfile(token);
-    let auth = await this.getAuth(profile.id, 'google');
+    async googleAuth(
+        code: string,
+        redirectUri?: string,
+    ): Promise<GoogleAuthResDto> {
+        const tokens = await this.googleAuthService.getTokens(
+            code,
+            redirectUri,
+        );
 
-    if (auth) {
-      return {
-        accessToken: this.tokenService.createAccessTokenFromUser(auth.user),
-      };
+        const profile = await this.googleAuthService.getUserProfile(
+            tokens,
+            redirectUri,
+        );
+        let auth = await this.getAuth(profile.id, 'google');
+
+        if (auth) {
+            return {
+                accessToken: this.tokenService.createAccessTokenFromUser(
+                    auth.user,
+                ),
+            };
+        }
+
+        const user = await this.userService.createUser({
+            name: profile.name,
+            profileImageUrl: profile.picture,
+            email: profile.email,
+        });
+
+        auth = await this.createAuth({
+            oAuthId: profile.id,
+            oAuth: 'google',
+
+            oAuthAccessToken: code,
+            oAuthEmail: profile.email,
+            oAuthRefreshToken: '',
+            user,
+        });
+
+        return {
+            accessToken: this.tokenService.createAccessTokenFromUser(auth.user),
+            isNewUser: true,
+        };
     }
 
-    const user = await this.userService.createUser({
-      name: profile.name,
-      profileImageUrl: profile.picture,
-    });
+    private async getAuth(oAuthId: string, oAuth: AuthEntity['oAuth']) {
+        return await this.authRepository.findOne({
+            where: {
+                oAuthId,
+                oAuth,
+            },
+            relations: ['user', 'user.permissions'],
+        });
+    }
 
-    auth = await this.createAuth({
-      oAuthId: profile.id,
-      oAuth: 'google',
-
-      oAuthAccessToken: token,
-      oAuthEmail: profile.email,
-      oAuthRefreshToken: '',
-      user,
-    });
-
-    return {
-      accessToken: this.tokenService.createAccessTokenFromUser(auth.user),
-      isNewUser: true,
-    };
-  }
-
-  private async getAuth(oAuthId: string, oAuth: AuthEntity['oAuth']) {
-    return await this.authRepository.findOne({
-      where: {
-        oAuthId,
-        oAuth,
-      },
-      relations: ['user', 'user.permissions'],
-    });
-  }
-
-  private async createAuth(data: Parameters<typeof AuthEntity.create>[0]) {
-    const auth = AuthEntity.create(data);
-    return await this.authRepository.save(auth);
-  }
+    private async createAuth(data: Parameters<typeof AuthEntity.create>[0]) {
+        const auth = AuthEntity.create(data);
+        return await this.authRepository.save(auth);
+    }
 }
