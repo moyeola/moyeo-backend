@@ -43,6 +43,7 @@ export class AuthService {
         const user = await this.userService.createUser({
             name: profile.name,
             profileImageUrl: profile.picture,
+            email: profile.email,
         });
 
         auth = await this.createAuth({

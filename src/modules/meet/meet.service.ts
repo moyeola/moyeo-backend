@@ -1,4 +1,9 @@
-import { MeetEntity, MemberEntity, UserEntity } from '@/entity';
+import {
+    MeetEntity,
+    MeetResponseEntity,
+    MemberEntity,
+    UserEntity,
+} from '@/entity';
 import { MeetObject } from '@/object';
 import {
     BadRequestException,
@@ -13,6 +18,8 @@ export class MeetService {
     constructor(
         @InjectRepository(MeetEntity)
         private readonly meetRepository: Repository<MeetEntity>,
+        @InjectRepository(MeetResponseEntity)
+        private readonly meetResponseRepository: Repository<MeetResponseEntity>,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(MemberEntity)
@@ -28,22 +35,30 @@ export class MeetService {
                 'creatorUser',
                 'creatorMember',
                 'creatorMember.group',
+                'creatorMember.user',
                 'responses',
                 'responses.responserUser',
                 'responses.responserMember',
                 'responses.responserMember.group',
+                'responses.responserMember.user',
             ],
         });
         return MeetObject.from(meet);
     }
 
-    async getMeets(userId: number): Promise<MeetObject[]> {
+    async getMeets(
+        userId: number,
+        where?: {
+            status?: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
+        },
+    ): Promise<MeetObject[]> {
         const meets = await this.meetRepository.find({
             where: [
                 {
                     creatorUser: {
                         id: userId,
                     },
+                    ...where,
                 },
                 {
                     creatorMember: {
@@ -57,16 +72,23 @@ export class MeetService {
                 'creatorUser',
                 'creatorMember',
                 'creatorMember.group',
+                'creatorMember.user',
                 'responses',
                 'responses.responserUser',
                 'responses.responserMember',
                 'responses.responserMember.group',
+                'responses.responserMember.user',
             ],
         });
         return meets.map((meet) => MeetObject.from(meet));
     }
 
-    async getMeetsByGroupId(groupId: number): Promise<MeetObject[]> {
+    async getMeetsByGroupId(
+        groupId: number,
+        where?: {
+            status?: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
+        },
+    ): Promise<MeetObject[]> {
         const meets = await this.meetRepository.find({
             where: {
                 creatorMember: {
@@ -74,15 +96,18 @@ export class MeetService {
                         id: groupId,
                     },
                 },
+                ...where,
             },
             relations: [
                 'creatorUser',
                 'creatorMember',
                 'creatorMember.group',
+                'creatorMember.user',
                 'responses',
                 'responses.responserUser',
                 'responses.responserMember',
                 'responses.responserMember.group',
+                'responses.responserMember.user',
             ],
         });
         return meets.map((meet) => MeetObject.from(meet));
@@ -189,6 +214,18 @@ export class MeetService {
             });
         }
 
+        if (
+            JSON.stringify(data.dates) !== meet.dates ||
+            meet.startTimeAt !== data.startTimeAt ||
+            meet.endTimeAt !== data.endTimeAt
+        ) {
+            await this.meetResponseRepository.delete({
+                meet: {
+                    id,
+                },
+            });
+        }
+
         if (data.title) {
             meet.title = data.title;
         }
@@ -231,8 +268,9 @@ export class MeetService {
             where: {
                 id: meetId,
             },
-            relations: ['creatorUser', 'creatorMember'],
+            relations: ['creatorUser', 'creatorMember', 'creatorMember.user'],
         });
+
         if (!meet) {
             throw new NotFoundException({
                 code: 'MEET_NOT_FOUND',

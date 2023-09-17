@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '@/entity';
+import { AuthEntity, UserEntity } from '@/entity';
 import { UserObject } from '@/object';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
@@ -11,6 +11,8 @@ export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
+        @InjectRepository(AuthEntity)
+        private readonly authRepository: Repository<AuthEntity>,
         private readonly calendarService: CalendarService,
     ) {}
 
@@ -86,6 +88,21 @@ export class UserService {
                 code: 'user_not_found',
             });
         }
+
+        await this.userRepository.update(
+            {
+                id: userId,
+            },
+            {
+                name: '탈퇴한 사용자',
+                profileImageUrl: '',
+                email: '',
+            },
+        );
+
+        await this.authRepository.softDelete({
+            user,
+        });
 
         await this.userRepository.softDelete({
             id: userId,
