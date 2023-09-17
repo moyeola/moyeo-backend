@@ -14,6 +14,7 @@ export class MeetObject implements MeetDto {
     startTimeAt: string;
     endTimeAt: string;
     responses: MeetResponseObject[];
+    status: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
     creator:
         | {
               type: 'user';

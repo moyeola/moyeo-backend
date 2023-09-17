@@ -16,6 +16,7 @@ import { Token } from '../auth/decorator/token.decorator';
 import { PostMeetReqDto } from './dto/PostMeet.req.dto';
 import { PatchMeetReq } from 'moyeo-object';
 import { GetMeetsReqDto } from './dto/GetMeets.req.dto';
+import { PatchMeetReqDto } from './dto/PatchMeet.req.dto';
 
 @Controller('meets')
 export class MeetController {
@@ -71,7 +72,7 @@ export class MeetController {
     async patchMeet(
         @Token() token: AccessTokenPayload,
         @Param('meetId') meetId: string,
-        @Body() dto: PatchMeetReq,
+        @Body() dto: PatchMeetReqDto,
     ) {
         const isUserCreator = await this.meetService.isUserCreator(
             +meetId,

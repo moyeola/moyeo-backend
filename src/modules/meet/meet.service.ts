@@ -175,6 +175,7 @@ export class MeetService {
             dates?: string[];
             startTimeAt?: string;
             endTimeAt?: string;
+            status?: 'PROGRESSING' | 'CONFIRMED' | 'CANCELED';
         },
     ) {
         const meet = await this.meetRepository.findOne({
@@ -202,6 +203,9 @@ export class MeetService {
         }
         if (data.endTimeAt) {
             meet.endTimeAt = data.endTimeAt;
+        }
+        if (data.status) {
+            meet.status = data.status;
         }
 
         await this.meetRepository.save(meet);
