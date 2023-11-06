@@ -13,6 +13,7 @@ import {
     GetGroupRes,
     PatchGroupRes,
     PostGroupInviteRes,
+    PostGroupRes,
 } from 'moyeo-object';
 import { PatchGroupReqDto } from './dto/PatchGroup.req.dto';
 import { Auth } from '../auth/decorator/auth.decorator';
@@ -29,7 +30,7 @@ export class GroupController {
     async postGroup(
         @Body() dto: PostGroupReqDto,
         @Token() token: AccessTokenPayload,
-    ) {
+    ): Promise<PostGroupRes> {
         const group = await this.groupService.postGroup(dto, token.userId);
         return {
             group,

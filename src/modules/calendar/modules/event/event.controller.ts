@@ -11,9 +11,16 @@ import { CalendarEventService } from './event.service';
 import { Auth } from '@/modules/auth/decorator/auth.decorator';
 import { AccessTokenPayload } from '@/modules/auth/types/accessTokenPayload';
 import { Token } from '@/modules/auth/decorator/token.decorator';
-import { GetCalendarEventsRes } from 'moyeo-object';
+import {
+    DeleteCalendarEventRes,
+    GetCalendarEventRes,
+    GetCalendarEventsRes,
+    PatchCalendarEventRes,
+    PostCalendarEventRes,
+} from 'moyeo-object';
 import { PostCalendarEventReqDto } from './dto/PostCalendarEvent.req.dto';
 import { CalendarService } from '../../calendar.service';
+import { CalendarEventObject } from '@/object';
 
 @Auth()
 @Controller('calendars/:calendarId/events')
@@ -46,7 +53,7 @@ export class CalendarEventController {
         @Param('calendarId') calendarId: string,
         @Param('eventId') eventId: string,
         @Token() token: AccessTokenPayload,
-    ) {
+    ): Promise<GetCalendarEventRes> {
         await this.calendarService.validateUserMemberOfCalendar(
             +calendarId,
             token.userId,
@@ -55,8 +62,9 @@ export class CalendarEventController {
             +eventId,
             +calendarId,
         );
+        const eventObj = CalendarEventObject.from(event);
         return {
-            event,
+            event: eventObj,
         };
     }
 
@@ -65,7 +73,7 @@ export class CalendarEventController {
         @Param('calendarId') calendarId: string,
         @Token() token: AccessTokenPayload,
         @Body() data: PostCalendarEventReqDto,
-    ) {
+    ): Promise<PostCalendarEventRes> {
         await this.calendarService.validateUserMemberOfCalendar(
             +calendarId,
             token.userId,
@@ -75,8 +83,9 @@ export class CalendarEventController {
             token.userId,
             data,
         );
+        const eventObj = CalendarEventObject.from(event);
         return {
-            event,
+            event: eventObj,
         };
     }
 
@@ -86,7 +95,7 @@ export class CalendarEventController {
         @Param('eventId') eventId: string,
         @Token() token: AccessTokenPayload,
         @Body() data: PostCalendarEventReqDto,
-    ) {
+    ): Promise<PatchCalendarEventRes> {
         await this.calendarService.validateUserMemberOfCalendar(
             +calendarId,
             token.userId,
@@ -96,8 +105,9 @@ export class CalendarEventController {
             +calendarId,
             data,
         );
+        const eventObj = CalendarEventObject.from(event);
         return {
-            event,
+            event: eventObj,
         };
     }
 
@@ -106,7 +116,7 @@ export class CalendarEventController {
         @Param('calendarId') calendarId: string,
         @Param('eventId') eventId: string,
         @Token() token: AccessTokenPayload,
-    ) {
+    ): Promise<DeleteCalendarEventRes> {
         await this.calendarService.validateUserMemberOfCalendar(
             +calendarId,
             token.userId,
