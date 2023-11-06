@@ -31,7 +31,7 @@
     "dayjs": "^1.11.6",
     "googleapis": "^122.0.0",
     "jsonwebtoken": "^8.5.1",
-    "moyeo-object": "^0.6.23",
+    "moyeo-object": "^0.6.24",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
