@@ -163,6 +163,15 @@ export class CalendarEventService {
                 endTime: data.end?.dateTime,
             },
         );
+
+        return await this.calendarEventRepository.findOne({
+            where: {
+                id,
+                calendar: {
+                    id: calendarId,
+                },
+            },
+        });
     }
 
     async deleteCalendarEvent(id: number, calendarId: number) {
