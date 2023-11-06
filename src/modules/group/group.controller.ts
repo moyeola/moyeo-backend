@@ -25,14 +25,6 @@ import { PostGroupReqDto } from './dto/PostGroup.req.dto';
 export class GroupController {
     constructor(private readonly groupService: GroupService) {}
 
-    @Get('')
-    async getGroups(@Token() token: AccessTokenPayload) {
-        const groups = await this.groupService.getGroups(token.userId);
-        return {
-            groups,
-        };
-    }
-
     @Post('')
     async postGroup(
         @Body() dto: PostGroupReqDto,
