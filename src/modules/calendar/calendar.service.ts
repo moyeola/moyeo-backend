@@ -98,7 +98,7 @@ export class CalendarService {
             name?: string;
         },
     ) {
-        const calendar = await this.calendarRepository.findOne({
+        let calendar = await this.calendarRepository.findOne({
             where: {
                 id: calendarId,
             },
@@ -119,6 +119,14 @@ export class CalendarService {
                 name: data.name,
             },
         );
+
+        calendar = await this.calendarRepository.findOne({
+            where: {
+                id: calendarId,
+            },
+            relations: ['group', 'user'],
+        });
+        return CalendarObject.from(calendar);
     }
 
     async getCalendarsByUserId(userId: number): Promise<CalendarObject[]> {

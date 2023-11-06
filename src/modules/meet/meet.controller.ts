@@ -16,6 +16,12 @@ import { Token } from '../auth/decorator/token.decorator';
 import { PostMeetReqDto } from './dto/PostMeet.req.dto';
 import { GetMeetsReqDto } from './dto/GetMeets.req.dto';
 import { PatchMeetReqDto } from './dto/PatchMeet.req.dto';
+import {
+    GetMeetRes,
+    GetMeetsRes,
+    PatchMeetRes,
+    PostMeetRes,
+} from 'moyeo-object';
 
 @Controller('meets')
 export class MeetController {
@@ -26,7 +32,7 @@ export class MeetController {
     async getMeets(
         @Token() token: AccessTokenPayload,
         @Query() query?: GetMeetsReqDto,
-    ) {
+    ): Promise<GetMeetsRes> {
         if (!query || query.creatorType === 'user') {
             const meets = await this.meetService.getMeets(token.userId, {
                 status: query?.status,
@@ -57,7 +63,7 @@ export class MeetController {
     }
 
     @Get('/:meetId')
-    async getMeet(@Param('meetId') meetId: string) {
+    async getMeet(@Param('meetId') meetId: string): Promise<GetMeetRes> {
         const meet = await this.meetService.getMeet(+meetId);
         return {
             meet,
@@ -69,8 +75,11 @@ export class MeetController {
     async postMeet(
         @Token() token: AccessTokenPayload,
         @Body() dto: PostMeetReqDto,
-    ) {
-        await this.meetService.postMeet(token.userId, dto);
+    ): Promise<PostMeetRes> {
+        const meetObj = await this.meetService.postMeet(token.userId, dto);
+        return {
+            meet: meetObj,
+        };
     }
 
     @Auth()
@@ -79,7 +88,7 @@ export class MeetController {
         @Token() token: AccessTokenPayload,
         @Param('meetId') meetId: string,
         @Body() dto: PatchMeetReqDto,
-    ) {
+    ): Promise<PatchMeetRes> {
         const isUserCreator = await this.meetService.isUserCreator(
             token.userId,
             +meetId,
@@ -90,7 +99,10 @@ export class MeetController {
                 message: '해당 모임의 생성자가 아닙니다.',
             });
         }
-        await this.meetService.patchMeet(+meetId, dto);
+        const meetObj = await this.meetService.patchMeet(+meetId, dto);
+        return {
+            meet: meetObj,
+        };
     }
 
     @Auth()

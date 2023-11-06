@@ -3,7 +3,12 @@ import { Auth } from '../auth/decorator/auth.decorator';
 import { CalendarService } from './calendar.service';
 import { AccessTokenPayload } from '../auth/types/accessTokenPayload';
 import { Token } from '../auth/decorator/token.decorator';
-import { GetCalendarRes, GetCalendarsRes } from 'moyeo-object';
+import {
+    GetCalendarRes,
+    GetCalendarsRes,
+    PatchCalendarRes,
+    SearchCalendarsRes,
+} from 'moyeo-object';
 import { PatchCalendarReqDto } from './dto/PatchCalendar.req.dto';
 import { SearchCalendarReqDto } from './dto/SearchCalendar.req.dto';
 import { CalendarObject } from '../../object/calendar.object';
@@ -29,7 +34,7 @@ export class CalendarController {
     async searchCalendars(
         @Token() token: AccessTokenPayload,
         @Query() dto: SearchCalendarReqDto,
-    ) {
+    ): Promise<SearchCalendarsRes> {
         const calendars = await this.calendarService.getCalendarsByOwner(
             {
                 type: dto.ownerType,
@@ -67,11 +72,17 @@ export class CalendarController {
         @Param('calendarId') calendarId: string,
         @Token() token: AccessTokenPayload,
         @Body() dto: PatchCalendarReqDto,
-    ) {
+    ): Promise<PatchCalendarRes> {
         await this.calendarService.validateUserMemberOfCalendar(
             +calendarId,
             token.userId,
         );
-        await this.calendarService.patchCalendar(+calendarId, dto);
+        const calendarObj = await this.calendarService.patchCalendar(
+            +calendarId,
+            dto,
+        );
+        return {
+            calendar: calendarObj,
+        };
     }
 }

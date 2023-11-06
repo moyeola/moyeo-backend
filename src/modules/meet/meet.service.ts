@@ -189,7 +189,7 @@ export class MeetService {
             endTimeAt: data.endTimeAt,
             creator: creator,
         });
-        await this.meetRepository.save(meet);
+        return MeetObject.from(await this.meetRepository.save(meet));
     }
 
     async patchMeet(
@@ -245,7 +245,7 @@ export class MeetService {
             meet.status = data.status;
         }
 
-        await this.meetRepository.save(meet);
+        return MeetObject.from(await this.meetRepository.save(meet));
     }
 
     async deleteMeet(id: number) {

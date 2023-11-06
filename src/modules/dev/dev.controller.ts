@@ -11,6 +11,11 @@ import { DevOnlyGuard } from './dev.guard';
 import { PostAccessTokenReqDto } from './dto/PostAccessToken.req.dto';
 import { PostDevAuthReqDto } from './dto/PostDevAuth.req.dto';
 import { DevAuthService } from './dev.auth.service';
+import {
+    PostDevAccessTokenRes,
+    PostDevAuthRes,
+    PostDevUserRes,
+} from 'moyeo-object';
 
 @Controller('dev')
 export class DevController {
@@ -27,7 +32,7 @@ export class DevController {
     }
 
     @Post('auth')
-    auth(@Body() dto: PostDevAuthReqDto) {
+    async auth(@Body() dto: PostDevAuthReqDto): Promise<PostDevAuthRes> {
         if (dto.masterToken === process.env.DEV_MASTER_TOKEN) {
             const devToken = this.devAuthService.createDevToken(
                 dto.developerName,
@@ -44,7 +49,9 @@ export class DevController {
 
     @Post('access-token')
     @UseGuards(DevOnlyGuard)
-    accessToken(@Body() dto: PostAccessTokenReqDto) {
+    async accessToken(
+        @Body() dto: PostAccessTokenReqDto,
+    ): Promise<PostDevAccessTokenRes> {
         return {
             accessToken: this.devService.createAccessToken(
                 dto.userId,
@@ -64,7 +71,7 @@ export class DevController {
             oAuth: string;
             oAuthId: string;
         },
-    ) {
+    ): Promise<PostDevUserRes> {
         return this.devService.createUser(dto);
     }
 }
