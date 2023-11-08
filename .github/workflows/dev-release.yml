@@ -59,6 +59,8 @@ jobs:
                       echo "AWS_BUCKET_NAME=${{ secrets.DEV_AWS_BUCKET_NAME }}" >> .env
                       echo "AWS_S3_URL=${{ secrets.DEV_AWS_S3_URL }}" >> .env
                       echo "DEV_MASTER_TOKEN=${{ secrets.DEV_DEV_MASTER_TOKEN }}" >> .env
+                      echo "FIREBASE_PROJECT_ID=${{ secrets.DEV_FIREBASE_PROJECT_ID }}" >> .env
+                      echo "FIREBASE_ACCOUNT_JSON=${{ secrets.DEV_FIREBASE_ACCOUNT_JSON }}" >> .env
 
                       docker stop moyeo-backend-dev || true
                       docker rm moyeo-backend-dev || true
