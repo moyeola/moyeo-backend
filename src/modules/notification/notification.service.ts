@@ -10,7 +10,11 @@ const SCOPES = ['https://www.googleapis.com/auth/firebase.messaging'];
 
 function getAccessToken() {
     return new Promise(function (resolve, reject) {
-        const key = JSON.parse(process.env.FIREBASE_ACCOUNT_JSON);
+        const key = JSON.parse(
+            Buffer.from(process.env.FIREBASE_ACCOUNT_JSON, 'base64').toString(
+                'utf-8',
+            ),
+        );
         const jwtClient = new google.auth.JWT(
             key.client_email,
             null,
