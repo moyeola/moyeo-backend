@@ -5,6 +5,7 @@ import { UserObject } from '@/object';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
 import { GetUserMeRes } from 'moyeo-object';
+import { Embed, Webhook } from '@hyunsdev/discord-webhook';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,7 @@ export class UserService {
     async createUser(
         data: Parameters<typeof UserEntity.create>[0],
     ): Promise<UserEntity> {
-        const user = UserEntity.create(data);
+        let user = UserEntity.create(data);
 
         // 개인 캘린더 생성
         await this.calendarService.createCalendar({
@@ -46,7 +47,35 @@ export class UserService {
             },
         });
 
-        return await this.userRepository.save(user);
+        user = await this.userRepository.save(user);
+
+        const client = new Webhook(
+            process.env.DISCORD_WEBHOOK_NEW,
+            'Moyeo 봇',
+            'https://moyeo.la/moyeo.png',
+        );
+
+        const embed: Embed = new Embed({
+            title: '새로운 사용자가 가입했어요!',
+            fields: [
+                {
+                    name: 'User',
+                    value: `[ ${user.id} ] ${user.name}(${user.email})`,
+                },
+            ],
+            thumbnail: {
+                url: user.profileImageUrl,
+            },
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `moyoe.la`,
+                icon_url: 'https://moyeo.la/moyeo.png',
+            },
+            color: 0x03fc6f,
+        });
+        await client.send('', [embed]);
+
+        return user;
     }
 
     async patchUser(
