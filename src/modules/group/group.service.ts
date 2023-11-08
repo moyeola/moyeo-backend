@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CalendarService } from '../calendar/calendar.service';
 import { GetGroupRes } from 'moyeo-object';
+import { Embed, Webhook } from '@hyunsdev/discord-webhook';
 
 @Injectable()
 export class GroupService {
@@ -55,6 +56,40 @@ export class GroupService {
                 group,
             },
         });
+
+        const client = new Webhook(
+            process.env.DISCORD_WEBHOOK_NEW,
+            'Moyeo 봇',
+            'https://moyeo.la/moyeo.png',
+        );
+
+        const embed: Embed = new Embed({
+            title: '새로운 그룹이 생성되었어요.',
+            thumbnail: {
+                url: user.profileImageUrl,
+            },
+            fields: [
+                {
+                    name: 'Group',
+                    value: `[ ${group.id} ] ${group.name}`,
+                },
+                {
+                    name: '소개',
+                    value: `${group.description}`,
+                },
+                {
+                    name: 'Owner',
+                    value: `[ ${user.id} ] ${user.name}(${user.email})`,
+                },
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `moyoe.la`,
+                icon_url: 'https://moyeo.la/moyeo.png',
+            },
+            color: 0x39acff,
+        });
+        await client.send('', [embed]);
 
         return GroupObject.from(group);
     }
