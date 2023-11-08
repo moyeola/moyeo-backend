@@ -16,12 +16,15 @@ export class UserNotificationService {
     ) {}
 
     async getNotifications(userId: number, page: number, limit: number) {
-        const notifications = await this.notificationRepository.find({
+        const user = await this.userRepository.findOne({
             where: {
-                user: {
-                    id: userId,
-                },
+                id: userId,
             },
+            relations: ['members', 'members.group'],
+        });
+
+        const notifications = await this.notificationRepository.find({
+            where: [],
             order: {
                 createdAt: 'DESC',
             },

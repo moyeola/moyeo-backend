@@ -1,4 +1,4 @@
-import { NotificationEntity } from '@/entity';
+import { NotificationEntity, UserEntity } from '@/entity';
 import { NotificationDeviceEntity } from '@/entity/notificationDevice.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,56 +53,65 @@ export class NotificationService {
         return devices.map((device) => device.token);
     }
 
-    async send(notification: NotificationEntity, tokens: string[]) {
+    async send(notification: NotificationEntity, users: UserEntity[]) {
         const action = `${notification.parsedAction.type}:${notification.parsedAction.url}`;
 
         const accessToken = await getAccessToken();
 
-        for (const token of tokens) {
-            try {
-                await axios.post(
-                    `https://fcm.googleapis.com/v1/projects/${process.env.FIREBASE_PROJECT_ID}/messages:send`,
-                    {
-                        message: {
-                            token: token,
-                            notification: {
-                                title: notification.title,
-                                body: notification.body,
-                            },
-                            data: {
-                                action: action,
-                                icon: 'https://moyeo.la/moyeo.png',
-                            },
-                            webpush: {
-                                headers: {
-                                    Urgency: 'high',
-                                },
+        for (const user of users) {
+            const tokens = user.notificationDevices.map(
+                (device) => device.token,
+            );
+
+            for (const token of tokens) {
+                try {
+                    await axios.post(
+                        `https://fcm.googleapis.com/v1/projects/${process.env.FIREBASE_PROJECT_ID}/messages:send`,
+                        {
+                            message: {
+                                token: token,
                                 notification: {
                                     title: notification.title,
                                     body: notification.body,
-                                    requireInteraction: 'true',
-                                    icon: 'https://moyeo.la/moyeo.png',
+                                },
+                                data: {
                                     action: action,
-                                    data: {
+                                    icon: 'https://moyeo.la/moyeo.png',
+                                },
+                                webpush: {
+                                    headers: {
+                                        Urgency: 'high',
+                                    },
+                                    notification: {
+                                        title: notification.title,
+                                        body: notification.body,
+                                        requireInteraction: 'true',
+                                        icon: 'https://moyeo.la/moyeo.png',
                                         action: action,
+                                        data: {
+                                            action: action,
+                                        },
                                     },
                                 },
                             },
                         },
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json',
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                                'Content-Type': 'application/json',
+                            },
                         },
-                    },
-                );
-            } catch (error) {
-                if (error.response.status === 404) continue;
-                throw error;
+                    );
+                } catch (error) {
+                    if (error.response.status === 404) continue;
+                    throw error;
+                }
             }
-        }
 
-        await this.notificationRepository.save(notification);
+            await this.notificationRepository.save({
+                ...notification,
+                user,
+            });
+        }
     }
 }
