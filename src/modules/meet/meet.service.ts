@@ -2,6 +2,9 @@ import {
     MeetEntity,
     MeetResponseEntity,
     MemberEntity,
+    NotificationAuthorTypeEnum,
+    NotificationEntity,
+    NotificationTypeEnum,
     UserEntity,
 } from '@/entity';
 import { MeetObject } from '@/object';
@@ -12,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class MeetService {
@@ -24,6 +28,7 @@ export class MeetService {
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(MemberEntity)
         private readonly memberRepository: Repository<MemberEntity>,
+        private readonly notificationService: NotificationService,
     ) {}
 
     async getMeet(id: number): Promise<MeetObject> {
@@ -43,6 +48,7 @@ export class MeetService {
                 'responses.responserMember.user',
             ],
         });
+
         return MeetObject.from(meet);
     }
 
@@ -80,6 +86,7 @@ export class MeetService {
                 'responses.responserMember.user',
             ],
         });
+
         return meets.map((meet) => MeetObject.from(meet));
     }
 
@@ -163,7 +170,7 @@ export class MeetService {
                 where: {
                     id: data.creator.memberId,
                 },
-                relations: ['user'],
+                relations: ['user', 'group'],
             });
             if (!member) {
                 throw new NotFoundException({
@@ -189,7 +196,30 @@ export class MeetService {
             endTimeAt: data.endTimeAt,
             creator: creator,
         });
-        return MeetObject.from(await this.meetRepository.save(meet));
+        const meetObj = MeetObject.from(await this.meetRepository.save(meet));
+
+        if (creatorType === 'member' && creator.type === 'member') {
+            const notification = NotificationEntity.create({
+                title: `'${data.title}' 일정 조율 입력을 요청받았어요.`,
+                authorName: creator.member.group.name,
+                authorType: NotificationAuthorTypeEnum.GROUP,
+                authorId: userId,
+                type: NotificationTypeEnum.MEET_REQUEST,
+                action: {
+                    type: 'to',
+                    url: `/main/meets/${meetObj.id}`,
+                },
+                body: '어서 가능한 시간을 입력해 주세요!',
+            });
+
+            const tokens = await this.notificationService.getTokensByGroupId(
+                creator.member.group.id,
+                userId,
+            );
+            await this.notificationService.send(notification, tokens);
+        }
+
+        return meetObj;
     }
 
     async patchMeet(

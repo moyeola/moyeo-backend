@@ -9,6 +9,7 @@ import {
     UserEntity,
 } from '@/entity';
 import { MeetResponseModule } from './modules/response/response.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
     controllers: [MeetController],
@@ -21,6 +22,7 @@ import { MeetResponseModule } from './modules/response/response.module';
             MeetResponseEntity,
         ]),
         MeetResponseModule,
+        NotificationModule,
     ],
 })
 export class MeetModule {}

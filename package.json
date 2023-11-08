@@ -29,6 +29,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dayjs": "^1.11.6",
+    "firebase-admin": "^11.11.0",
     "googleapis": "^122.0.0",
     "jsonwebtoken": "^8.5.1",
     "moyeo-object": "^0.6.26",
