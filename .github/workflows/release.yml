@@ -61,7 +61,7 @@ jobs:
                       echo "DEV_MASTER_TOKEN=${{ secrets.DEV_MASTER_TOKEN }}" >> .env
                       echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
                       echo "FIREBASE_ACCOUNT_JSON=${{ secrets.FIREBASE_ACCOUNT_JSON }}" >> .env
-                      echo "DISCORD_WEBHOOK_NEW=${{ secrets.DEV_DISCORD_WEBHOOK_NEW }}" >> .env
+                      echo "DISCORD_WEBHOOK_NEW=${{ secrets.DISCORD_WEBHOOK_NEW }}" >> .env
 
                       docker stop moyeo-backend || true
                       docker rm moyeo-backend || true
