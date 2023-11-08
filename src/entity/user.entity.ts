@@ -5,6 +5,7 @@ import { PermissionEntity } from './permission.entity';
 import { AuthEntity } from './auth.entity';
 import { MemberEntity } from './member.entity';
 import { CommonConstant } from './constant/common.constant';
+import { NotificationDeviceEntity } from './notificationDevice.entity';
 
 export enum UserStatus {
     'NEW' = 'NEW',
@@ -42,6 +43,12 @@ export class UserEntity extends BaseEntity {
 
     @OneToMany(() => AuthEntity, (auth) => auth.user)
     auth: AuthEntity;
+
+    @OneToMany(
+        () => NotificationDeviceEntity,
+        (notificationDevice) => notificationDevice.user,
+    )
+    notificationDevices: NotificationDeviceEntity[];
 
     static create({
         name,

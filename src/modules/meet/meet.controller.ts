@@ -89,14 +89,14 @@ export class MeetController {
         @Param('meetId') meetId: string,
         @Body() dto: PatchMeetReqDto,
     ): Promise<PatchMeetRes> {
-        const isUserCreator = await this.meetService.isUserCreator(
+        const isUserMember = await this.meetService.isUserMember(
             token.userId,
             +meetId,
         );
-        if (!isUserCreator) {
+        if (!isUserMember) {
             throw new BadRequestException({
-                code: 'NOT_CREATOR',
-                message: '해당 모임의 생성자가 아닙니다.',
+                code: 'NOT_MEMBER',
+                message: '해당 모임의 멤버가 아닙니다.',
             });
         }
         const meetObj = await this.meetService.patchMeet(+meetId, dto);
@@ -111,14 +111,14 @@ export class MeetController {
         @Token() token: AccessTokenPayload,
         @Param('meetId') meetId: string,
     ) {
-        const isUserCreator = await this.meetService.isUserCreator(
+        const isUserMember = await this.meetService.isUserMember(
             token.userId,
             +meetId,
         );
-        if (!isUserCreator) {
+        if (!isUserMember) {
             throw new BadRequestException({
-                code: 'NOT_CREATOR',
-                message: '해당 모임의 생성자가 아닙니다.',
+                code: 'NOT_MEMBER',
+                message: '해당 모임의 멤버가 아닙니다.',
             });
         }
         await this.meetService.deleteMeet(+meetId);

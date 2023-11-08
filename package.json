@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@hyunsdev/discord-webhook": "^1.0.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
@@ -29,9 +30,10 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dayjs": "^1.11.6",
+    "firebase-admin": "^11.11.0",
     "googleapis": "^122.0.0",
     "jsonwebtoken": "^8.5.1",
-    "moyeo-object": "^0.6.24",
+    "moyeo-object": "^0.6.26",
     "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
