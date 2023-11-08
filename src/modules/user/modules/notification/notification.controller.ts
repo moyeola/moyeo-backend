@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Query,
+} from '@nestjs/common';
 import { UserNotificationService } from './notification.service';
 import { Auth } from '@/modules/auth/decorator/auth.decorator';
 import { Token } from '@/modules/auth/decorator/token.decorator';
@@ -6,8 +14,11 @@ import { AccessTokenPayload } from '@/modules/auth/types/accessTokenPayload';
 import {
     DeleteUserMeNotificationRes,
     GetUserMeNotificationsRes,
+    PostUserMeNotificationRegisterRes,
 } from 'moyeo-object';
 import { GetUserMeNotificationsReqDto } from './dto/GetUserMeNotification.req.dto';
+import { PostUserMeNotificationRegisterReqDto } from './dto/PostUserMeNotificationRegister.req.dto';
+import { NotificationObject } from '@/object';
 
 @Auth()
 @Controller('users/me/notifications')
@@ -29,8 +40,12 @@ export class UserNotificationController {
                 page,
                 limit,
             );
+
+        const notificationObjs = notifications.map((notification) =>
+            NotificationObject.from(notification),
+        );
         return {
-            notifications,
+            notifications: notificationObjs,
         };
     }
 
@@ -43,6 +58,18 @@ export class UserNotificationController {
         await this.userNotificationService.deleteUserMeNotification(
             userId,
             +notificationId,
+        );
+        return;
+    }
+
+    @Post('/register')
+    async registerNotificationDevice(
+        @Token() token: AccessTokenPayload,
+        @Body() dto: PostUserMeNotificationRegisterReqDto,
+    ): Promise<PostUserMeNotificationRegisterRes> {
+        await this.userNotificationService.registerNotificationDevice(
+            token.userId,
+            dto.token,
         );
         return;
     }

@@ -2,6 +2,9 @@ import {
     MeetEntity,
     MeetResponseEntity,
     MemberEntity,
+    NotificationAuthorTypeEnum,
+    NotificationEntity,
+    NotificationTypeEnum,
     UserEntity,
 } from '@/entity';
 import { MeetObject } from '@/object';
@@ -12,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class MeetService {
@@ -24,6 +28,7 @@ export class MeetService {
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(MemberEntity)
         private readonly memberRepository: Repository<MemberEntity>,
+        private readonly notificationService: NotificationService,
     ) {}
 
     async getMeet(id: number): Promise<MeetObject> {
@@ -43,6 +48,13 @@ export class MeetService {
                 'responses.responserMember.user',
             ],
         });
+
+        if (!meet) {
+            throw new NotFoundException({
+                code: 'MEET_NOT_FOUND',
+            });
+        }
+
         return MeetObject.from(meet);
     }
 
@@ -80,6 +92,7 @@ export class MeetService {
                 'responses.responserMember.user',
             ],
         });
+
         return meets.map((meet) => MeetObject.from(meet));
     }
 
@@ -163,7 +176,7 @@ export class MeetService {
                 where: {
                     id: data.creator.memberId,
                 },
-                relations: ['user'],
+                relations: ['user', 'group'],
             });
             if (!member) {
                 throw new NotFoundException({
@@ -189,7 +202,36 @@ export class MeetService {
             endTimeAt: data.endTimeAt,
             creator: creator,
         });
-        return MeetObject.from(await this.meetRepository.save(meet));
+        const meetObj = MeetObject.from(await this.meetRepository.save(meet));
+
+        if (creatorType === 'member' && creator.type === 'member') {
+            const notification = NotificationEntity.create({
+                title: `'${data.title}' 일정 조율 입력을 요청받았어요.`,
+                authorName: creator.member.group.name,
+                authorType: NotificationAuthorTypeEnum.GROUP,
+                authorId: userId,
+                type: NotificationTypeEnum.MEET_REQUEST,
+                action: {
+                    type: 'to',
+                    url: `/main/meets/${meetObj.id}`,
+                },
+                body: '어서 가능한 시간을 입력해 주세요!',
+            });
+
+            const users = await this.userRepository.find({
+                where: {
+                    members: {
+                        group: {
+                            id: creator.member.group.id,
+                        },
+                    },
+                },
+                relations: ['notificationDevices'],
+            });
+            await this.notificationService.send(notification, users);
+        }
+
+        return meetObj;
     }
 
     async patchMeet(
@@ -207,6 +249,12 @@ export class MeetService {
             where: {
                 id,
             },
+            relations: [
+                'creatorUser',
+                'creatorMember',
+                'creatorMember.group',
+                'creatorMember.user',
+            ],
         });
         if (!meet) {
             throw new NotFoundException({
@@ -224,6 +272,33 @@ export class MeetService {
                     id,
                 },
             });
+
+            if (meet.creatorType === 'member') {
+                const notification = NotificationEntity.create({
+                    title: `'${data.title}' 일정 조율 입력을 요청받았어요.`,
+                    authorName: meet.creatorMember.group.name,
+                    authorType: NotificationAuthorTypeEnum.GROUP,
+                    authorId: meet.creatorMember.user.id,
+                    type: NotificationTypeEnum.MEET_REQUEST,
+                    action: {
+                        type: 'to',
+                        url: `/main/meets/${meet.id}`,
+                    },
+                    body: '어서 가능한 시간을 입력해 주세요!',
+                });
+
+                const users = await this.userRepository.find({
+                    where: {
+                        members: {
+                            group: {
+                                id: meet.creatorMember.group.id,
+                            },
+                        },
+                    },
+                    relations: ['notificationDevices'],
+                });
+                await this.notificationService.send(notification, users);
+            }
         }
 
         if (data.title) {
@@ -260,6 +335,11 @@ export class MeetService {
             });
         }
 
+        await this.meetResponseRepository.delete({
+            meet: {
+                id,
+            },
+        });
         await this.meetRepository.remove(meet);
     }
 
@@ -282,5 +362,29 @@ export class MeetService {
         } else {
             return meet.creatorMember.user.id === userId;
         }
+    }
+
+    async isUserMember(userId: number, meetId: number): Promise<boolean> {
+        const meet = await this.meetRepository.findOne({
+            where: {
+                id: meetId,
+            },
+            relations: [
+                'creatorMember',
+                'creatorMember.group',
+                'creatorMember.group.members',
+                'creatorMember.group.members.user',
+            ],
+        });
+
+        if (!meet) {
+            throw new NotFoundException({
+                code: 'MEET_NOT_FOUND',
+            });
+        }
+
+        return meet.creatorMember.group.members.some(
+            (member) => member.user.id === userId,
+        );
     }
 }
