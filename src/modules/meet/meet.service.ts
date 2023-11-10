@@ -343,6 +343,68 @@ export class MeetService {
         await this.meetRepository.remove(meet);
     }
 
+    async expedite(id: number) {
+        const meet = await this.meetRepository.findOne({
+            where: {
+                id,
+            },
+            relations: [
+                'creatorMember',
+                'creatorMember.group',
+                'creatorMember.user',
+            ],
+        });
+        if (!meet) {
+            throw new NotFoundException({
+                code: 'MEET_NOT_FOUND',
+            });
+        }
+        if (meet.creatorType !== 'member') return;
+
+        const members = await this.memberRepository.find({
+            where: {
+                group: {
+                    id: meet.creatorMember.group.id,
+                },
+            },
+            relations: ['user', 'user.notificationDevices'],
+        });
+
+        const responses = await this.meetResponseRepository.find({
+            where: {
+                meet: {
+                    id,
+                },
+            },
+            relations: ['responserMember'],
+        });
+
+        const unansweredUsers = members
+            .filter(
+                (member) =>
+                    !responses.some(
+                        (response) =>
+                            response.responserMember.id === member?.id,
+                    ),
+            )
+            .map((member) => member.user);
+
+        const notification = NotificationEntity.create({
+            title: `'${meet.title}' 일정 조율 입력을 독촉받았어요.`,
+            authorName: meet.creatorMember.group.name,
+            authorType: NotificationAuthorTypeEnum.GROUP,
+            authorId: meet.creatorMember.user.id,
+            type: NotificationTypeEnum.MEET_REQUEST,
+            action: {
+                type: 'to',
+                url: `/main/meets/${meet.id}`,
+            },
+            body: '어서 가능한 시간을 입력해 주세요!',
+        });
+
+        await this.notificationService.send(notification, unansweredUsers);
+    }
+
     async isUserCreator(userId: number, meetId: number): Promise<boolean> {
         const meet = await this.meetRepository.findOne({
             where: {

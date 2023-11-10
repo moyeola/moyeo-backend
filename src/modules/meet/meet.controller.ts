@@ -123,4 +123,23 @@ export class MeetController {
         }
         await this.meetService.deleteMeet(+meetId);
     }
+
+    @Auth()
+    @Post('/:meetId/expedite')
+    async expediteMeet(
+        @Token() token: AccessTokenPayload,
+        @Param('meetId') meetId: string,
+    ) {
+        const isUserMember = await this.meetService.isUserMember(
+            token.userId,
+            +meetId,
+        );
+        if (!isUserMember) {
+            throw new BadRequestException({
+                code: 'NOT_MEMBER',
+                message: '해당 모임의 멤버가 아닙니다.',
+            });
+        }
+        await this.meetService.expedite(+meetId);
+    }
 }
