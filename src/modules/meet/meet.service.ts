@@ -348,6 +348,11 @@ export class MeetService {
             where: {
                 id,
             },
+            relations: [
+                'creatorMember',
+                'creatorMember.group',
+                'creatorMember.user',
+            ],
         });
         if (!meet) {
             throw new NotFoundException({
@@ -362,7 +367,7 @@ export class MeetService {
                     id: meet.creatorMember.group.id,
                 },
             },
-            relations: ['user'],
+            relations: ['user', 'user.notificationDevices'],
         });
 
         const responses = await this.meetResponseRepository.find({
